@@ -106,7 +106,7 @@ export default function Products() {
       <div className="product" ref={productRef}>
           <div className="cards" ref={cardsRef} key={products._id}>
             <div className="img">
-              <img ref={imgRef} src={`https://minikart-backend.onrender.com/products/shop${products.image}`} alt={products.name} />
+              <img ref={imgRef} src={`https://minikart-backend.onrender.com/uploads${products.image}`} alt={products.name} />
             </div>
             <p><strong>Brand:</strong> {products.brand}</p>
             <p>{products.description}</p>
