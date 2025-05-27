@@ -69,7 +69,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const uploadRes = await axios.post("http://localhost:5000/api/products/upload", formData, {
+      const uploadRes = await axios.post("https://minikart-backend.onrender.com/api/products/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -85,7 +85,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
     };
 
     if (productToEdit) {
-      await axios.put(`http://localhost:5000/api/products/shop/${productToEdit._id}`, productData, {
+      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, productData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -93,7 +93,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       alert("Product updated");
       ClearEdit();
     } else {
-      await axios.post("http://localhost:5000/api/products/shop", productData, {
+      await axios.post("https://minikart-backend.onrender.com/api/products/shop", productData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

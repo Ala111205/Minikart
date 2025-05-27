@@ -4,13 +4,20 @@ const mongoose=require("mongoose");
 const cors=require("cors");
 
 const app=express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://minikart-frontend.onrender.com" // 🔁 replace with your actual frontend domain
+];
+
 // const port=process.env.PORT || 5000;
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.startsWith("http://localhost:")) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("Not allowed by CORS: "+origin));
     }
   },
   credentials: true,

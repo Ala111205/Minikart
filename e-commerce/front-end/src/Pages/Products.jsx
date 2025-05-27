@@ -19,7 +19,7 @@ export default function Products() {
     const token = localStorage.getItem('adminToken');
 
     axios
-      .get(`http://localhost:5000/api/products/shop/${id}`, {
+      .get(`http://your-backend-service.onrender.com/products/shop/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

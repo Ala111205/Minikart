@@ -36,7 +36,7 @@ export default function Shop() {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
 
-    axios.get('http://localhost:5000/api/products/shop', {
+    axios.get('https://minikart-backend.onrender.com/api/products/shop', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -93,7 +93,7 @@ export default function Shop() {
               <div onClick={toggel} data-aos={`${change?"flip-left":"fade-up"}`} className="product-card">
                 <Link  to={`/products/${prod._id}`}>
                 <div onClick={toggel} className="card" key={prod._id}>
-                  <img src={`http://localhost:5000${prod.image}`} alt={prod.name} />
+                  <img src={`https://minikart-backend.onrender.com${prod.image}`} alt={prod.name} />
                   <h2>{prod.name}</h2>
                   <div className='ps'>
                     <p>Price: ₹{prod.price}</p>

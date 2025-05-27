@@ -18,7 +18,7 @@ export default function AdminLogin({onLoginSuccess}){
     const handleLogin=async(e)=>{
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5000/api/admin/login", {
+            const res = await axios.post("https://minikart-backend.onrender.com/api/admin/login", {
             email,
             password,
             });

@@ -26,7 +26,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/admin/forgot-password", {
+      const res = await axios.post("http://your-backend-service.onrender.com/api/admin/forgot-password", {
         email,
         newPassword,
       });

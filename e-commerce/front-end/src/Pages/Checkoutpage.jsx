@@ -68,7 +68,7 @@ export default function CheckoutPage() {
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   try {
-    const response = await axios.post('http://localhost:5000/api/orders/', {
+    const response = await axios.post('https://minikart-backend.onrender.com/api/orders/', {
       items,
       total
     });
