@@ -19,7 +19,7 @@ export default function Products() {
     const token = localStorage.getItem('adminToken');
 
     axios
-      .get(`http://your-backend-service.onrender.com/products/shop/${id}`, {
+      .get(`https://minikart-backend.onrender.com/products/shop/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -106,7 +106,7 @@ export default function Products() {
       <div className="product" ref={productRef}>
           <div className="cards" ref={cardsRef} key={products._id}>
             <div className="img">
-              <img ref={imgRef} src={`http://localhost:5000${products.image}`} alt={products.name} />
+              <img ref={imgRef} src={`https://minikart-backend.onrender.com${products.image}`} alt={products.name} />
             </div>
             <p><strong>Brand:</strong> {products.brand}</p>
             <p>{products.description}</p>
