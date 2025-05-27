@@ -27,8 +27,6 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
 
-MONGO_URI=mongodb+srv;
-
 //Routes
 const productRoutes=require("./routes/productroutes")
 app.use("/api/products", productRoutes);
