@@ -20,13 +20,14 @@ app.use(cors({
 app.use(express.json());
 
 //MongoDB connection
-mongoose.connect("mongodb://localhost:27017/my_shop")
-.then(()=>{
-    console.log("MongoDB Connected...")
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
-.catch((error)=>{
-    console.log(error)
-})
+.then(() => console.log('MongoDB Connected'))
+.catch(err => console.log(err));
+
+MONGO_URI=mongodb+srv;
 
 //Routes
 const productRoutes=require("./routes/productroutes")
