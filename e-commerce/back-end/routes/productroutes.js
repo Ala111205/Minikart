@@ -1,9 +1,11 @@
 const express=require("express");
 const router=express.Router();
 const Product=require("../models/product");
-const verifyAdmin=require("../routes/verifyAdmin")
+const verifyAdmin=require("../routes/verifyAdmin");
+const cloudinary=require("../models/cloudinary");
 const multer = require("multer");
 const path = require("path");
+const fs=require("fs")
 
 //POST add a new product
 router.post("/shop", verifyAdmin, async(req,res)=>{
@@ -68,28 +70,25 @@ router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
         res.status(500).json({message:error.message});
     }
 });
-
 // Store uploaded images in /uploads folder
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Ensure "uploads/" exists in project root
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+const upload = multer({ dest: "uploads/" }); // temp local folder
+
+router.post("/upload", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    // Delete the temp file
+    fs.unlinkSync(req.file.path);
+
+    res.status(200).json({ imageUrl: result.secure_url }); // store this URL in DB
+  } catch (error) {
+    res.status(500).json({ message: "Upload failed", error: error.message });
   }
-});
-
-const upload = multer({ storage: storage });
-
-// POST /upload route
-router.post("/upload", upload.single("image"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No image uploaded" });
-  }
-
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.status(200).json({ imageUrl });
 });
 
 module.exports=router;

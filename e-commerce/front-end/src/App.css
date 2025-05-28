@@ -37,15 +37,19 @@
   height:50px;
   border: 8px solid var(--Scolor);
   border-radius: 50%;
-  animation-name: loading;
-  animation-duration: infinite;
-  animation-timing-function: ease-in-out;
+  animation: spin 1s linear infinite;
 }
-@keyframes loading{
-  from{
+@keyframes spin{
+  0%{
     transform: rotate(0deg);
   }
-  to{
+  50%{
+    transform: rotate(150deg);
+  }
+  75%{
+    transform: rotate(250deg);
+  }
+  100%{
     transform: rotate(360deg);
   }
 }

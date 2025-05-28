@@ -98,7 +98,7 @@ export default function Products() {
   
   if(!products){
     
-    return <p>loading...</p>;
+    return <div className='loading'></div>;
   }
 
   return (
@@ -106,7 +106,7 @@ export default function Products() {
       <div className="product" ref={productRef}>
           <div className="cards" ref={cardsRef} key={products._id}>
             <div className="img">
-              <img ref={imgRef} src={`https://minikart-backend.onrender.com/uploads/uploads/${products.image}`} alt={products.name} />
+              <img ref={imgRef} src={`https://minikart-backend.onrender.com${products.image}`} alt={products.name} />
             </div>
             <p><strong>Brand:</strong> {products.brand}</p>
             <p>{products.description}</p>
