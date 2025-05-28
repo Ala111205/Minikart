@@ -145,8 +145,8 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
           <input type="number" name="price" value={form.price} onChange={handleChange} required />
         </div>
 
-        <div><label>Image URL</label>
-          <input type="file" accept="image/*" name="image" onChange={(e)=>setImageFile(e.target.files[0])} />
+        <div><label>Product Image</label>
+          <input type="file" accept="image/*" onChange={(e)=>setImageFile(e.target.files[0])} />
         </div>
 
         <div><label>Stock</label>
