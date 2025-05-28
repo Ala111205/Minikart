@@ -79,13 +79,27 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       imageUrl = uploadRes.data.imageUrl; // Get image URL from server
     }
 
-    const productData = {
-      ...form,
-      image: imageUrl, // Use the uploaded image URL
-    };
+    const payload = new FormData();
+      payload.append("name", form.name);
+      payload.append("description", form.description);
+      payload.append("price", form.price);
+      payload.append("stock", form.stock);
+      payload.append("brand", form.brand);
+      payload.append("image", imageUrl);
+      payload.append("ram", form.specs.ram);
+      payload.append("storage", form.specs.storage);
+      payload.append("processor", form.specs.processor);
+      payload.append("display", form.specs.display);
+      payload.append("os", form.specs.os);
+      payload.append("battery", form.specs.battery);
+
+    // const productData = {
+    //   ...form,
+    //   image: imageUrl, // Use the uploaded image URL
+    // };
 
     if (productToEdit) {
-      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, productData, {
+      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`,  payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type":"multipart/form-data",
@@ -94,10 +108,9 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       alert("Product updated");
       ClearEdit();
     } else {
-      await axios.post("https://minikart-backend.onrender.com/api/products/shop", productData, {
+      await axios.post("https://minikart-backend.onrender.com/api/products/shop",{ ...form, image: imageUrl }, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type":"multipart/form-data",
         },
       });
       alert("Product added successfully!");
