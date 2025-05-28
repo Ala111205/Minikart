@@ -78,8 +78,8 @@ export default function Shop() {
   };
 
   const filteredProducts = products.filter(prod =>
-    prod.name.toLowerCase().includes(searchTerm) ||
-    prod.description.toLowerCase().includes(searchTerm) ||
+    prod.name?.toLowerCase().includes(searchTerm) ||
+    prod.description?.toLowerCase().includes(searchTerm) ||
     prod.brand?.toLowerCase().includes(searchTerm) ||
     prod.processor?.toLowerCase().includes(searchTerm)
   );
