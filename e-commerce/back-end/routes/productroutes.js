@@ -58,6 +58,7 @@ router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) =>
       price: req.body.price,
       stock: req.body.stock,
       brand: req.body.brand,
+      image: req.body.image,
       specs: {
         ram: req.body.ram,
         storage: req.body.storage,
