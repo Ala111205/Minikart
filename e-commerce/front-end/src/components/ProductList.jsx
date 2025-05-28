@@ -71,7 +71,7 @@ export default class ProductList extends Component {
             </tr>
           </thead>
           <tbody>
-            {Products.map((prod) => (
+            {Array.isArray(Products)&&Products.map((prod) => (
               <tr key={prod._id}>
                 <td>{prod.name}</td>
                 <td>{prod.brand || "-"}</td>

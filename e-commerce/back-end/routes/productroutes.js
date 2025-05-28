@@ -23,8 +23,7 @@ router.post("/shop", verifyAdmin, async(req,res)=>{
 router.get("/shop", verifyAdmin, async(req,res)=>{
     try {
         console.log("Received data: ",req.body)
-        const products = new Product(req.body);
-        await products.save();
+        const products = await Product.find();
         res.status(201).json(products);
         
     } catch (error) {
