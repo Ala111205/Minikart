@@ -7,6 +7,8 @@ const multer = require("multer");
 const path = require("path");
 const fs=require("fs")
 
+const upload = multer({ dest: "uploads/" }); // temp local folder
+
 //POST add a new product
 router.post("/shop", verifyAdmin, async(req,res)=>{
     try {
@@ -102,8 +104,6 @@ router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
     }
 });
 // Store uploaded images in /uploads folder
-const upload = multer({ dest: "uploads/" }); // temp local folder
-
 router.post("/upload", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
