@@ -22,11 +22,14 @@ router.post("/shop", verifyAdmin, async(req,res)=>{
 // GET all products
 router.get("/shop", verifyAdmin, async(req,res)=>{
     try {
-        const products=await Product.find();
-        res.json(products);
+        console.log("Received data: ",req.body)
+        const products = new Product(req.body);
+        await products.save();
+        res.status(201).json(products);
+        
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: error.message})
+        console.log("Error saving product:", error.message);
+        res.status(500).json({ message: error.message });
     }
 });
 

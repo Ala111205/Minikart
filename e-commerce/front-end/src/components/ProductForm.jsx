@@ -71,7 +71,6 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
 
       const uploadRes = await axios.post("https://minikart-backend.onrender.com/api/products/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
