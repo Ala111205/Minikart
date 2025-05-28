@@ -2,12 +2,12 @@ const mongoose=require("mongoose");
 
 //creating Schema for collection
 const ProductSchema=new mongoose.Schema({
-    name:{type: String, required: true},
+    name:{type: String},
     description:String,
-    price:{type:Number,required:true},
+    price:{type:Number},
     image:String,
-    stock:{type:Number,default:0},
-    brand:{type:String,required:true},
+    stock:{type:Number},
+    brand:{type:String},
     specs:{
         ram: String,
         storage: String,
