@@ -44,21 +44,50 @@ router.get("/shop/:id", verifyAdmin, async(req,res)=>{
         res.status(500).json({message: error.message})
     }
 });
+// =========================== PUT - Update Product =============================
+router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) => {
+  try {
+    const ID = req.params.id;
 
-//PUT Update a product
-router.put("/shop/:id", verifyAdmin, async(req,res)=>{
-    try {
-        const ID=req.params.id
-        const products=await Product.findByIdAndUpdate(ID,req.body,{new:true})
-        res.json(products);
+    // Build updateFields from body
+    const updateFields = {
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      brand: req.body.brand,
+      specs: {
+        ram: req.body.ram,
+        storage: req.body.storage,
+        processor: req.body.processor,
+        display: req.body.display,
+        os: req.body.os,
+        battery: req.body.battery,
+      },
+    };
 
-        if(!products){
-            return res.status(404).json({message: "Item is Not Found"})
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: error.message})
+    // If new image is uploaded
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      updateFields.image = result.secure_url;
+
+      // Remove local file after upload
+      fs.unlinkSync(req.file.path);
     }
+
+    const updatedProduct = await Product.findByIdAndUpdate(ID, updateFields, {
+      new: true,
+    });
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.json(updatedProduct);
+  } catch (error) {
+    console.log("Update failed:", error.message);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 //DELETE a product
