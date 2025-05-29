@@ -113,20 +113,32 @@ router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
     }
 });
 // Store uploaded images in /uploads folder
+const streamifier = require("streamifier");
+
 router.post("/upload", uploads.single("image"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
+      return res.status(400).json({ message: "No image sed" });
     }
 
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path);
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
 
-    // Delete the temp file
-    fs.unlinkSync(req.file.path);
+    const result = await streamUpload(req);
+    res.status(200).json({ imageUrl: result.secure_url });
 
-    res.status(200).json({ imageUrl: result.secure_url }); // store this URL in DB
   } catch (error) {
+    console.error("Upload failed:", error.message);
     res.status(500).json({ message: "Upload failed", error: error.message });
   }
 });
