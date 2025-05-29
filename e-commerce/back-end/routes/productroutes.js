@@ -12,12 +12,13 @@ const upload = multer({ dest: "uploads/" }); // temp local folder
 //POST add a new product
 router.post("/shop", verifyAdmin, async(req,res)=>{
     try {
+        console.log("BODY RECEIVED:", req.body);
         const products=new Product(req.body);
         await products.save();
         res.status(201).json(products);
     } catch (error) {
-        console.log(error);
-        res.status(500);
+        console.log("ERROR ADDING PRODUCT:", error.message);
+        res.status(500).json({ message: error.message });
     }
 });
 
