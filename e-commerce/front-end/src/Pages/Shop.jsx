@@ -93,7 +93,7 @@ export default function Shop() {
               <div onClick={toggel} data-aos={`${change?"flip-left":"fade-up"}`} className="product-card">
                 <Link  to={`/products/${prod._id}`}>
                 <div onClick={toggel} className="card" key={prod._id}>
-                  <img src={`https://minikart-backend.onrender.com${prod.image}`} alt={prod.name} />
+                  <img src={prod.image} alt={prod.name} />
                   <h2>{prod.name}</h2>
                   <div className='ps'>
                     <p>Price: ₹{prod.price}</p>
