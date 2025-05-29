@@ -83,7 +83,7 @@ export default function Shop() {
     prod.brand?.toLowerCase().includes(searchTerm) ||
     prod.processor?.toLowerCase().includes(searchTerm)
   );
-  if(setChange){
+  if(!change){
     
     return <div className='loading'></div>;
   }
