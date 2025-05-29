@@ -5,9 +5,16 @@ const verifyAdmin=require("../routes/verifyAdmin");
 const cloudinary=require("../config/cloudinary");
 const multer = require("multer");
 const path = require("path");
-const fs=require("fs")
+const fs=require("fs");
 
-const upload = multer({ dest: "uploads/" }); // temp local folder
+const storage=multure.memoryStorage();
+const upload=multer({storage});
+
+const uploads = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + "-" + file.originalname),
+});
 
 //POST add a new product
 router.post("/shop", verifyAdmin, upload.none(), async(req,res)=>{
@@ -48,7 +55,7 @@ router.get("/shop/:id", verifyAdmin, async(req,res)=>{
     }
 });
 // =========================== PUT - Update Product =============================
-router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) => {
+router.put("/shop/:id", verifyAdmin, uploads.single("image"), async (req, res) => {
   try {
     const ID = req.params.id;
 
@@ -106,7 +113,7 @@ router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
     }
 });
 // Store uploaded images in /uploads folder
-router.post("/upload", upload.single("image"), async (req, res) => {
+router.post("/upload", uploads.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
