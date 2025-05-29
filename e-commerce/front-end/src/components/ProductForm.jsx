@@ -93,50 +93,28 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
     //   payload.append("os", form.specs.os);
     //   payload.append("battery", form.specs.battery);
 
-    let productData;
+        // Create FormData for product update
+    const data = new FormData();
+    data.append("name", form.name);
+    data.append("description", form.description);
+    data.append("price", form.price);
+    data.append("stock", form.stock);
+    data.append("brand", form.brand);
+    data.append("image", imageUrl); // Either existing or newly uploaded
 
-      if (imageFile) {
-        // send as FormData
-        productData = new FormData();
-        productData.append("name", form.name);
-        productData.append("description", form.description);
-        productData.append("price", form.price);
-        productData.append("stock", form.stock);
-        productData.append("brand", form.brand);
-        productData.append("image", imageUrl); // set temporary image (Cloudinary)
-        productData.append("ram", form.specs.ram);
-        productData.append("storage", form.specs.storage);
-        productData.append("processor", form.specs.processor);
-        productData.append("display", form.specs.display);
-        productData.append("os", form.specs.os);
-        productData.append("battery", form.specs.battery);
-      } else {
-        // send as JSON if no image
-        productData = {
-          name: form.name,
-          description: form.description,
-          price: form.price,
-          stock: form.stock,
-          brand: form.brand,
-          image: imageUrl,
-          specs: {
-            ram: form.specs.ram,
-            storage: form.specs.storage,
-            processor: form.specs.processor,
-            display: form.specs.display,
-            os: form.specs.os,
-            battery: form.specs.battery,
-          }
-        };
-      }
+    // Flatten specs
+    data.append("ram", form.specs.ram);
+    data.append("storage", form.specs.storage);
+    data.append("processor", form.specs.processor);
+    data.append("display", form.specs.display);
+    data.append("os", form.specs.os);
+    data.append("battery", form.specs.battery);
 
     if (productToEdit) {
-      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, productData, {
+      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
-          ...(imageFile
-            ? { "Content-Type": "multipart/form-data" }
-            : { "Content-Type": "application/json" })
+          "Content-Type":"multipart/form-data"
         },
       });
       alert("Product updated");
