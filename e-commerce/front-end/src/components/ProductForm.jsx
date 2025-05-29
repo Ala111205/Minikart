@@ -112,6 +112,32 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
           Authorization: `Bearer ${token}`,
         },
       });
+      try {
+        console.log("POST /shop payload:", req.body);
+
+        const product = new Product({
+          name: req.body.name,
+          description: req.body.description,
+          price: Number(req.body.price),
+          image: req.body.image,
+          stock: Number(req.body.stock),
+          brand: req.body.brand,
+          specs: {
+            ram: req.body.specs?.ram,
+            storage: req.body.specs?.storage,
+            processor: req.body.specs?.processor,
+            display: req.body.specs?.display,
+            os: req.body.specs?.os,
+            battery: req.body.specs?.battery
+          }
+        });
+
+        await product.save();
+        res.status(201).json(product);
+      } catch (error) {
+        console.log("ERROR saving product:", error.message);
+        res.status(500).json({ message: error.message });
+      }
       alert("Product added successfully!");
     }
 
