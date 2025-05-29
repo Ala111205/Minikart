@@ -10,7 +10,7 @@ const fs=require("fs")
 const upload = multer({ dest: "uploads/" }); // temp local folder
 
 //POST add a new product
-router.post("/shop", verifyAdmin, async(req,res)=>{
+router.post("/shop", verifyAdmin, upload.none(), async(req,res)=>{
     try {
         console.log("BODY RECEIVED:", req.body);
         const products=new Product(req.body);
