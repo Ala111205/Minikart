@@ -102,6 +102,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, productData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type":"application/json"
         },
       });
       alert("Product updated");
@@ -110,6 +111,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       await axios.post("https://minikart-backend.onrender.com/api/products/shop", productData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type":"application/json"
         },
       });
       alert("Product added successfully!");
