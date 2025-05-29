@@ -17,7 +17,7 @@ const uploads = multer.diskStorage({
 });
 
 //POST add a new product
-router.post("/shop", verifyAdmin, upload.none(), async (req, res) => {
+router.post("/shop", verifyAdmin, async (req, res) => {
   try {
     console.log("BODY RECEIVED:", req.body);
 
@@ -28,14 +28,7 @@ router.post("/shop", verifyAdmin, upload.none(), async (req, res) => {
       image: req.body.image,
       stock: Number(req.body.stock),
       brand: req.body.brand,
-      specs: {
-        ram: req.body["specs.ram"],
-        storage: req.body["specs.storage"],
-        processor: req.body["specs.processor"],
-        display: req.body["specs.display"],
-        os: req.body["specs.os"],
-        battery: req.body["specs.battery"]
-      }
+      specs: req.body.specs
     });
 
     await product.save();
