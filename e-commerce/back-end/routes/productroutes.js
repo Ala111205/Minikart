@@ -55,7 +55,7 @@ router.get("/shop/:id", verifyAdmin, async(req,res)=>{
     }
 });
 // =========================== PUT - Update Product =============================
-router.put("/shop/:id", verifyAdmin, uploads.single("image"), async (req, res) => {
+router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) => {
   try {
     const ID = req.params.id;
 
@@ -115,7 +115,7 @@ router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
 // Store uploaded images in /uploads folder
 const streamifier = require("streamifier");
 
-router.post("/upload", uploads.single("image"), async (req, res) => {
+router.post("/upload", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No image sed" });
