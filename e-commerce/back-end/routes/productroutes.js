@@ -28,7 +28,14 @@ router.post("/shop", verifyAdmin, async (req, res) => {
       image: req.body.image,
       stock: Number(req.body.stock),
       brand: req.body.brand,
-      specs: req.body.specs
+      specs: {
+          ram: req.body.specs?.ram || req.body.ram,
+          storage: req.body.specs?.storage || req.body.storage,
+          processor: req.body.specs?.processor || req.body.processor,
+          display: req.body.specs?.display || req.body.display,
+          os: req.body.specs?.os || req.body.os,
+          battery: req.body.specs?.battery || req.body.battery,
+      }
     });
 
     await product.save();
