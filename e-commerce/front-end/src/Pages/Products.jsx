@@ -18,8 +18,7 @@ export default function Products() {
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
 
-    axios
-      .get(`https://minikart-backend.onrender.com/api/products/shop/${id}`, {
+      axios.get(`https://minikart-backend.onrender.com/api/products/shop/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
