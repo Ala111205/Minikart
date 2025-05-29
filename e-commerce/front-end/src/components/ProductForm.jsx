@@ -93,16 +93,50 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
     //   payload.append("os", form.specs.os);
     //   payload.append("battery", form.specs.battery);
 
-    const productData = {
-      ...form,
-      image: imageUrl, // Use the uploaded image URL
-    };
+    let productData;
+
+      if (imageFile) {
+        // send as FormData
+        productData = new FormData();
+        productData.append("name", form.name);
+        productData.append("description", form.description);
+        productData.append("price", form.price);
+        productData.append("stock", form.stock);
+        productData.append("brand", form.brand);
+        productData.append("image", imageUrl); // set temporary image (Cloudinary)
+        productData.append("ram", form.specs.ram);
+        productData.append("storage", form.specs.storage);
+        productData.append("processor", form.specs.processor);
+        productData.append("display", form.specs.display);
+        productData.append("os", form.specs.os);
+        productData.append("battery", form.specs.battery);
+      } else {
+        // send as JSON if no image
+        productData = {
+          name: form.name,
+          description: form.description,
+          price: form.price,
+          stock: form.stock,
+          brand: form.brand,
+          image: imageUrl,
+          specs: {
+            ram: form.specs.ram,
+            storage: form.specs.storage,
+            processor: form.specs.processor,
+            display: form.specs.display,
+            os: form.specs.os,
+            battery: form.specs.battery,
+          }
+        };
+      }
 
     if (productToEdit) {
       await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, productData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type":"application/json"
+          ...(imageFile
+            ? { "Content-Type": "multipart/form-data" }
+            : { "Content-Type": "application/json" })
         },
       });
       alert("Product updated");
