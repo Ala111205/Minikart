@@ -59,18 +59,15 @@ const AppContent = () => {
           </PrivateRoute>}/>
         <Route element={<PrivateRoute><Layout show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} /></PrivateRoute>}>
           <Route path="/products/:id" element={<Products />} />
-<<<<<<< HEAD:e-commerce/front-end/src/App.jsx
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/checkout" element={< CheckoutPage/>} />
           <Route path="/Buying" element={<Buying/>} />
-=======
           <Route path="/shop" element={<Shop baseURL={baseURL} />} />
           <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
           <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
           <Route path="/checkout" element={< CheckoutPage baseURL={baseURL}/>} />
->>>>>>> 7122aba (changes):src/App.jsx
         </Route>
         <Route path="/admin/profile" element={<AdminProfile />} />
       </Routes>
