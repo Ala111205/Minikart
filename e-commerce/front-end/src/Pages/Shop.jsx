@@ -83,10 +83,6 @@ export default function Shop({baseURL}) {
     prod.brand?.toLowerCase().includes(searchTerm) ||
     prod.processor?.toLowerCase().includes(searchTerm)
   );
-  if(!change){
-    
-    return <div className='loading'></div>;
-  }
 
   return (
     <div className="shop">
@@ -113,7 +109,7 @@ export default function Shop({baseURL}) {
             </>
           ))
         ) : (
-          <p>No products match your search.</p>
+          <p className={!searchTerm?"loading":""}>{searchTerm?"No products match your search":""}</p>
         )}
       </div>
     </div>
