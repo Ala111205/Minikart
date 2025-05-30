@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect,  useRef, useState } from 'react';
 import axios from 'axios';
 
-export default function Products() {
+export default function Products({baseURL}) {
   const [products, setProducts] = useState(null);
   const [cart, setCart] = useState([]);
 
@@ -18,7 +18,7 @@ export default function Products() {
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
 
-      axios.get(`https://minikart-backend.onrender.com/api/products/shop/${id}`, {
+      axios.get(`${baseURL}/api/products/shop/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -5,7 +5,7 @@ import { MdEmail } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
-export default function ForgotPassword() {
+export default function ForgotPassword({baseURL}) {
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -26,7 +26,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const res = await axios.post("https://minikart-backend.onrender.com/api/admin/forgot-password", {
+      const res = await axios.post(`${baseURL}/api/admin/forgot-password`, {
         email,
         newPassword,
       });

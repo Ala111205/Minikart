@@ -4,7 +4,11 @@ import { useLocation,Link,useNavigate } from 'react-router-dom';
 import AOS from "aos";
 import "aos/dist/aos.css";
 
+<<<<<<< HEAD:e-commerce/front-end/src/Pages/Shop.jsx
 export default function Shop() {
+=======
+export default function Shop({baseURL}) {
+>>>>>>> 7122aba (changes):src/Pages/Shop.jsx
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [change,setChange]=useState(true);
@@ -36,7 +40,7 @@ export default function Shop() {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
 
-    axios.get('https://minikart-backend.onrender.com/api/products/shop', {
+    axios.get(`${baseURL}/api/products/shop`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

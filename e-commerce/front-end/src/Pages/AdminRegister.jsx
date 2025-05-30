@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-function AdminRegister() {
+function AdminRegister({baseURL}) {
   const navigate = useNavigate(); //use navigate for redirecte page is a router method
 
   const [form, setForm] = useState({
@@ -29,7 +29,7 @@ function AdminRegister() {
     }
 
     try {
-      const res = await axios.post('https://minikart-backend.onrender.com/api/admin/register', {
+      const res = await axios.post(`${baseURL}/api/admin/register`, {
         firstname: form.firstname,
         lastname: form.lastname,
         email: form.email,

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }) {
+export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, baseURL }) {
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -69,7 +69,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const uploadRes = await axios.post("https://minikart-backend.onrender.com/api/products/upload", formData, {
+      const uploadRes = await axios.post(`${baseURL}/api/products/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type":"multipart/form-data",
@@ -111,7 +111,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
     data.append("battery", form.specs.battery);
 
     if (productToEdit) {
-      await axios.put(`https://minikart-backend.onrender.com/api/products/shop/${productToEdit._id}`, data, {
+      await axios.put(`${baseURL}/api/products/shop/${productToEdit._id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type":"multipart/form-data"
@@ -120,7 +120,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit }
       alert("Product updated");
       ClearEdit();
     } else {
-      await axios.post("https://minikart-backend.onrender.com/api/products/shop", productData, {
+      await axios.post(`${baseURL}/api/products/shop`, productData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type":"application/json"

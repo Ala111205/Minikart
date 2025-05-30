@@ -41,12 +41,14 @@ const AppContent = () => {
     return <div className="loading"></div>;
   }
 
+  const baseURL=import.meta.env.VITE_API_URL
+
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>
       <Routes>
-        <Route path="/" element={<AdminLogin onLoginSuccess={handleLoginSuccess} />}/>
-        <Route path="/signup" element={<AdminRegister />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/" element={<AdminLogin onLoginSuccess={handleLoginSuccess} baseURL={baseURL} />}/>
+        <Route path="/signup" element={<AdminRegister baseURL={baseURL} />}  />
+        <Route path="/forgot-password" element={<ForgotPassword baseURL={baseURL} />} />
         <Route path="/Navbar" element={
         <PrivateRoute>
           <Navbar show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} />
@@ -57,11 +59,18 @@ const AppContent = () => {
           </PrivateRoute>}/>
         <Route element={<PrivateRoute><Layout show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} /></PrivateRoute>}>
           <Route path="/products/:id" element={<Products />} />
+<<<<<<< HEAD:e-commerce/front-end/src/App.jsx
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/checkout" element={< CheckoutPage/>} />
           <Route path="/Buying" element={<Buying/>} />
+=======
+          <Route path="/shop" element={<Shop baseURL={baseURL} />} />
+          <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
+          <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
+          <Route path="/checkout" element={< CheckoutPage baseURL={baseURL}/>} />
+>>>>>>> 7122aba (changes):src/App.jsx
         </Route>
         <Route path="/admin/profile" element={<AdminProfile />} />
       </Routes>

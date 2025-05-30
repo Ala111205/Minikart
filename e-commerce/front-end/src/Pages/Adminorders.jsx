@@ -3,12 +3,12 @@ import axios from 'axios';
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function AdminOrders() {
+export default function AdminOrders({baseURL}) {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
-    axios.get('https://minikart-backend.onrender.com/api/orders/orders',{
+    axios.get(`${baseURL}/api/orders/orders`,{
       headers: {
             Authorization: `Bearer ${token}`,
           },

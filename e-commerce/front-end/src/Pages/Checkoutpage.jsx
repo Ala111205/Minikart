@@ -4,7 +4,7 @@ import axios from "axios"
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-export default function CheckoutPage() {
+export default function CheckoutPage({baseURL}) {
   const [cart, setCart] = useState([]);
   const [form, setForm] = useState({
     name: '',
@@ -68,7 +68,7 @@ export default function CheckoutPage() {
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   try {
-    const response = await axios.post('https://minikart-backend.onrender.com/api/orders/', {
+    const response = await axios.post(`${baseURL}/api/orders/`, {
       items,
       total
     });

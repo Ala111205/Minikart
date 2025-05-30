@@ -19,7 +19,7 @@ export default class ProductList extends Component {
         return;
       }
 
-      const res = await axios.get("https://minikart-backend.onrender.com/api/products/shop", {
+      const res = await axios.get(`${this.props.baseURL}/api/products/shop`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -33,7 +33,7 @@ export default class ProductList extends Component {
   handleDelete = async (id) => {
     const token = localStorage.getItem("adminToken");
     try {
-      await axios.delete(`https://minikart-backend.onrender.com/api/products/shop/${id}`, {
+      await axios.delete(`${this.props.baseURL}/api/products/shop/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
