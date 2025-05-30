@@ -4,7 +4,7 @@ import ProductForm from "../components/ProductForm";
 import ProductList from "../components/ProductList";
 
 
-export default function Dashboard({onLogout}){
+export default function Dashboard(){
     const [refers,setRefers]=useState(false);//re-fetch products
 
     const [editingProduct,setEditingProduct]=useState(null);//holds product being edited
