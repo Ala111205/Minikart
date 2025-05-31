@@ -8,6 +8,13 @@ export default function AdminOrders({baseURL}) {
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
+
+    if(!token){
+      return <div className="admin-orders">
+        <p className="loading"></p>
+      </div>
+    }
+
     axios.get(`${baseURL}/api/orders/orders`,{
       headers: {
             Authorization: `Bearer ${token}`,
@@ -24,6 +31,7 @@ export default function AdminOrders({baseURL}) {
             easing:"ease-out"
         })
     AOS.refresh();
+
   }, []);
 
   return (
