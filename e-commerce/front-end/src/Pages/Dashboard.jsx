@@ -4,7 +4,7 @@ import ProductForm from "../components/ProductForm";
 import ProductList from "../components/ProductList";
 
 
-export default function Dashboard({onLogout}){
+export default function Dashboard({baseURL}){
     const [refers,setRefers]=useState(false);//re-fetch products
 
     const [editingProduct,setEditingProduct]=useState(null);//holds product being edited
@@ -44,8 +44,8 @@ export default function Dashboard({onLogout}){
                     <button onClick={handleLogout} className="logout">Logout</button>
                 </div>
                 <div className="dashboard">
-                    <ProductForm onProductAdded={handleProductAdded} productToEdit={editingProduct} ClearEdit={ClearEdit} />
-                    <ProductList key={refers} onEditProduct={handleEditProduct} />
+                    <ProductForm onProductAdded={handleProductAdded} productToEdit={editingProduct} ClearEdit={ClearEdit} baseURL={baseURL} />
+                    <ProductList key={refers} onEditProduct={handleEditProduct} baseURL={baseURL} />
                 </div>
             </div>
         </>
