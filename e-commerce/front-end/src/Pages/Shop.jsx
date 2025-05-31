@@ -36,6 +36,8 @@ export default function Shop({baseURL}) {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
 
+    console.log("baseURL is: ",baseURL)
+
     axios.get(`${baseURL}/api/products/shop`, {
       headers: {
         Authorization: `Bearer ${token}`
