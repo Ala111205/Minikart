@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import axios from "axios";
-export default function AdminLogin({onLoginSuccess, baseURL}){
+export default function AdminLogin({onLoginSuccess}){
     const [email, setEmail]=useState("");
 
     const [password, setPassword]=useState("");
@@ -14,6 +14,8 @@ export default function AdminLogin({onLoginSuccess, baseURL}){
     const [loginFailed, setLoginFailed]=useState(false);
 
     const navigate=useNavigate();
+
+    const baseURL=import.meta.env.VITE_API_URL
 
     const handleLogin=async(e)=>{
         e.preventDefault();
