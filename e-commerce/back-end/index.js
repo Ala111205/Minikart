@@ -8,7 +8,7 @@ const app=express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://minikart-frontend.vercel.app/" // 🔁 replace with your actual frontend domain
+  "https://minikart-frontend.vercel.app" // 🔁 replace with your actual frontend domain
 ];
 
 // const port=process.env.PORT || 5000;
