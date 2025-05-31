@@ -41,7 +41,10 @@ export default function Shop({baseURL}) {
         Authorization: `Bearer ${token}`
       }
     })
-      .then((res) => setProducts(res.data))
+      .then((res) => {
+        console.log("Fetched products: ",res.data),
+        setProducts(res.data)
+      })
       .catch((err) => console.error('Failed to fetch products', err));
 
     const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
