@@ -109,7 +109,7 @@ export default function Shop({baseURL}) {
             </>
           ))
         ) : (
-          <p className={!searchTerm?"loading":""}>{searchTerm?"No products match your search":""}</p>
+          <p className={searchTerm?"loading":""}>{!searchTerm?"No products match your search":""}</p>
         )}
       </div>
     </div>
