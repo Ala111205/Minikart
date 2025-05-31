@@ -37,7 +37,7 @@ const AppContent = () => {
   const isAuthPage = location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/forgot-password';
 
 
-  const baseURL=import.meta.env.VITE_API_URL
+  const baseURL="https://minikart-backend.onrender.com"
 
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>
