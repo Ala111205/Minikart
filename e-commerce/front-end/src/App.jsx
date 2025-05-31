@@ -36,8 +36,9 @@ const AppContent = () => {
   const isAuthPage = location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/forgot-password';
 
   if (loading) {
-    // still loading
-    return <div className="loading"></div>;
+    return <div className="container container-bg">
+      <div className="loading"></div>
+    </div>
   }
 
   const baseURL=import.meta.env.VITE_API_URL
