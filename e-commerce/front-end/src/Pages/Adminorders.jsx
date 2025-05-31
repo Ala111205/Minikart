@@ -28,9 +28,7 @@ export default function AdminOrders({baseURL}) {
 
   return (
     <div className="admin-orders">
-      {orders.length === 0 ? (
-        <p>No orders found.</p>
-      ) : (
+      {orders.length > 0 ? (
         Array.isArray(orders)&&orders.map(order => (
           <div key={order._id} data-aos="fade-up" className="order-card">
             <p><strong>Order ID:</strong> {order._id}</p>
@@ -50,7 +48,9 @@ export default function AdminOrders({baseURL}) {
             <hr />
           </div>
         ))
-      )}
+      ) : (
+        <p>No orders found.</p>
+      ) }
     </div>
   );
 }
