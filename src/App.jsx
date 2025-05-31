@@ -41,7 +41,7 @@ const AppContent = () => {
     return <div className="loading"></div>;
   }
 
-  const baseURL=import.meta.env.VITE_API_URL
+  const baseURL="https://minikart-backend.onrender.com"
 
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>

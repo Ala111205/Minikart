@@ -77,16 +77,12 @@ export default function Shop({baseURL}) {
     navigate("/cart")
   };
 
-  const filteredProducts = products.filter(prod =>
+  const filteredProducts = Array.isArray(products)&&products.filter(prod =>
     prod.name?.toLowerCase().includes(searchTerm) ||
     prod.description?.toLowerCase().includes(searchTerm) ||
     prod.brand?.toLowerCase().includes(searchTerm) ||
     prod.processor?.toLowerCase().includes(searchTerm)
   );
-  if(!change){
-    
-    return <div className='loading'></div>;
-  }
 
   return (
     <div className="shop">
