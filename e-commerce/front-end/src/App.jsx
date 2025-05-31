@@ -57,7 +57,7 @@ const AppContent = () => {
             <Dashboard baseURL={baseURL} />
           </PrivateRoute>}/>
         <Route element={<PrivateRoute><Layout show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} /></PrivateRoute>}>
-          <Route path="/products/:id" element={<Products />} />
+          <Route path="/products/:id" element={<Products baseURL={baseURL} />} />
           <Route path="/shop" element={<Shop baseURL={baseURL} />} />
           <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
           <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
