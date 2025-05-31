@@ -120,7 +120,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, 
       alert("Product updated");
       ClearEdit();
     } else {
-      await axios.post(`${baseURL}/api/products/shop`, productData, {
+      await axios.post(`${baseURL}/api/products/shop`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type":"application/json"
