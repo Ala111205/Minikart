@@ -87,7 +87,7 @@ export default function Shop({baseURL}) {
   return (
     <div className="shop">
       <div className="product-grid">
-        {filteredProducts.length < 0 ? (
+        {filteredProducts.length > 0 ? (
           filteredProducts.map((prod) => (
             <>
               <div onClick={toggel} data-aos={`${change?"flip-left":"fade-up"}`} className="product-card">
