@@ -12,7 +12,6 @@ import Shop from "./Pages/Shop";
 import Products from "./Pages/Products";
 import CartPage from "./Pages/Cart";
 import CheckoutPage from "./Pages/Checkoutpage";
-import Buying from "./Pages/Buying";
 import AdminOrders from "./Pages/Adminorders";
 import './App.css';
 
@@ -59,11 +58,6 @@ const AppContent = () => {
           </PrivateRoute>}/>
         <Route element={<PrivateRoute><Layout show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} /></PrivateRoute>}>
           <Route path="/products/:id" element={<Products />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/checkout" element={< CheckoutPage/>} />
-          <Route path="/Buying" element={<Buying/>} />
           <Route path="/shop" element={<Shop baseURL={baseURL} />} />
           <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
           <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
