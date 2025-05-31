@@ -41,7 +41,7 @@ const AppContent = () => {
     return <div className="loading"></div>;
   }
 
-  const baseURL=process.env.VITE_API_URL
+  const baseURL=import.meta.env.VITE_API_URL
 
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>
