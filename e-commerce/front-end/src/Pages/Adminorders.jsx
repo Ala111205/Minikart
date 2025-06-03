@@ -57,7 +57,7 @@ export default function AdminOrders({baseURL}) {
           </div>
         ))
       ) : (
-        <p>No orders found.</p>
+        <p className={orders.length < 0 ? "" : "loading"} >{orders.length < 0 ? "No orders found" : ""}</p>
       ) }
     </div>
   );
