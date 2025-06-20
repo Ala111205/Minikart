@@ -628,7 +628,7 @@ main{
   z-index: -1;
 }
 .profile{
-  height:560px;
+  height:100vh;
   display:flex;
   flex-direction:column;
   justify-content: space-around;
@@ -680,9 +680,6 @@ main{
   }
   .goup{
     right: -20px;
-    height:465px;
-  }
-  .profile{
     height:465px;
   }
 }
@@ -1114,15 +1111,6 @@ main{
   align-items: center;
   gap:20px;
 }
-/* .products-cards:hover{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 5vh;
-  -webkit-transform-style: preserve-3d;
-  transform: preserve-3d;
-} */
 .cards .img{
   width:100%;
   position: relative;
@@ -1132,8 +1120,6 @@ main{
   border-radius: 20px;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  /* border-left: 1.5px solid var(--Scolor);
-  border-right: 1.5px solid var(--Scolor); */
   z-index: -1;
 }
 .cards .img img{
