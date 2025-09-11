@@ -118,6 +118,7 @@ main{
   position: absolute;
   top: 10px;
   left:10px;
+  pointer-events: none;
   z-index: 1;
 }
 .login form div div{
@@ -395,6 +396,7 @@ main{
   position: absolute;
   top: 10px;
   left:10px;
+  pointer-events: none;
   z-index: 1;
 }
 .forgot-password form div input{
