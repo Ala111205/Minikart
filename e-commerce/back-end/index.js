@@ -34,8 +34,8 @@ mongoose.connect(process.env.MONGO_URI)
 const productRoutes=require("./routes/productroutes")
 app.use("/api/products", productRoutes);
 
-const adminRoutes=require("./routes/adminRoutes")
-app.use("/api/admin", adminRoutes);
+const authRoutes=require("./routes/authRoutes")
+app.use("/api/admin", authRoutes);
 
 const orderRoutes=require("./routes/OrderRoutes");
 app.use("/api/orders", orderRoutes);
