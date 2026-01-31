@@ -23,7 +23,7 @@ export default function AdminLogin({onLoginSuccess, baseURL}){
             password,
             });
             const token = res.data.token; // ✅ Fix is here
-            const admin = res.data.admin
+            const admin = res.data.user;
             localStorage.setItem("adminToken", token); // ✅ Save correctly
             localStorage.setItem("adminData", JSON.stringify(admin))
             alert("Login successfully");
