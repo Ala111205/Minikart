@@ -2,7 +2,6 @@ const express=require("express");
 const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
 const verifyAdmin = require("../middleware/verifyAdmin");
-// const Admin=require("../models/Admin");
 const User = require("../models/user");  // can be admin or normal user
 const router=express.Router();
 
@@ -41,9 +40,9 @@ router.post("/login", async (req, res) => {
 
 //Register route
 router.post("/register", async (req, res) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { firstname, lastname, email, password, role } = req.body;
 
-  if (!firstname || !lastname || !email || !password) {
+  if (!firstname || !lastname || !email || !password || !role) {
     return res.status(400).json({ message: "All fields required" });
   }
 
@@ -53,7 +52,7 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ firstname, lastname, email, password: hashedPassword });
+    const user = new User({ firstname, lastname, email, password: hashedPassword, role: "user" });
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -64,9 +63,9 @@ router.post("/register", async (req, res) => {
 
 //Register route for admin creation
 router.post("/register", verifyAdmin, async (req, res) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { firstname, lastname, email, password, role } = req.body;
 
-  if (!firstname || !lastname || !email || !password) {
+  if (!firstname || !lastname || !email || !password || !role) {
     return res.status(400).json({ message: "All fields required" });
   }
 
@@ -76,10 +75,10 @@ router.post("/register", verifyAdmin, async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ firstname, lastname, email, password: hashedPassword });
+    const user = new User({ firstname, lastname, email, password: hashedPassword, role: "admin" });
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "Admin registered successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

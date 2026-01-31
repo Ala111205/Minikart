@@ -74,8 +74,11 @@ function AdminRegister({baseURL}) {
           < MdEmail className="email"/>
         </div>
         <div>
-          <input name='role' placeholder="" type="role" value={form.role} onChange={handleChange} required />
-          <label>Role</label>
+          <label for="role">Role</label>
+          <select name="role" id="role">
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+          </select>
         </div>
         <div>
           <input name='password' placeholder="" type={showPassword ? "text" : 'password'} value={form.password} onChange={handleChange} required />
