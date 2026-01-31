@@ -17,19 +17,23 @@ export default function Navbar(props){
     e.preventDefault();
     if (query.trim()) {
       navigate(`/shop?search=${encodeURIComponent(query)}`);
-      setQuery(""); // Optional: clear input
+      setQuery(""); // clear input
     }
   };
 
   useEffect(() => {
-    const adminData = JSON.parse(localStorage.getItem("adminData"));
-    if (adminData) {
-      setAdminName(adminData.name || "Admin");
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      navigate("/", { replace: true });
+      return;
     }
 
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/",{replace:true}); // Redirect if not logged in
+    const raw = localStorage.getItem("adminData");
+
+    if (raw) {
+      const admin = JSON.parse(raw);
+      setAdminName(admin.name || "Admin");
     }
 
     const unblock = window.history.pushState(null, null, null, window.location.href);

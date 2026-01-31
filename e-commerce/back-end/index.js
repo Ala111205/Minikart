@@ -8,10 +8,9 @@ const app=express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://minikart-pearl.vercel.app" // 🔁 replace with your actual frontend domain
+  "https://minikart-pearl.vercel.app"
 ];
 
-// const port=process.env.PORT || 5000;
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
