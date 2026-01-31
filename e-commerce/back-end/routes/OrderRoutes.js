@@ -6,39 +6,26 @@ const verifyAdmin = require('../middleware/verifyAdmin');
 
 
 // place order
-router.post('/', verifyUser, async (req, res) => {
-  try {
-    const { items, total, customer } = req.body;
+router.post("/", verifyUser, async (req, res) => {
+  const order = await Order.create({
+    ...req.body,
+    user: req.user.id
+  });
 
-    const newOrder = new Order({
-      items,
-      total,
-      customer,
-      user: req.user.id
-    });
-
-    await newOrder.save();
-
-    res.status(201).json(newOrder);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  res.json(order);
 });
 
-
-// get my orders
-router.get('/my-orders', verifyUser, async (req, res) => {
-  const orders = await Order.find({ user: req.user.id })
-    .sort({ createdAt: -1 });
-
+// user only
+router.get("/my-orders", verifyUser, async (req, res) => {
+  const orders = await Order.find({ user: req.user.id });
   res.json(orders);
 });
-
 
 // admin only
-router.get('/admin/all', verifyAdmin, async (req, res) => {
-  const orders = await Order.find().sort({ createdAt: -1 });
+router.get("/admin/orders", verifyAdmin, async (req, res) => {
+  const orders = await Order.find();
   res.json(orders);
 });
+
 
 module.exports = router;

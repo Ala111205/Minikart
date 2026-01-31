@@ -38,50 +38,44 @@ router.post("/login", async (req, res) => {
   }
 });
 
-//Register route
+// Normal user
 router.post("/register", async (req, res) => {
-  const { firstname, lastname, email, password, role } = req.body;
+  const { firstname, lastname, email, password } = req.body;
 
-  if (!firstname || !lastname || !email || !password || !role) {
-    return res.status(400).json({ message: "All fields required" });
-  }
+  const exists = await User.findOne({ email });
+  if (exists) return res.status(400).json({ message: "User exists" });
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User exists" });
+  const hash = await bcrypt.hash(password, 10);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+  await User.create({
+    firstname,
+    lastname,
+    email,
+    password: hash,
+    role: "user"
+  });
 
-    const user = new User({ firstname, lastname, email, password: hashedPassword, role: "user" });
-    await user.save();
-
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.status(201).json({ message: "User registered successfully" });
 });
 
-//Register route for admin creation
-router.post("/register", verifyAdmin, async (req, res) => {
-  const { firstname, lastname, email, password, role } = req.body;
+// Admin (protected)
+router.post("/register-admin", verifyAdmin, async (req, res) => {
+  const { firstname, lastname, email, password } = req.body;
 
-  if (!firstname || !lastname || !email || !password || !role) {
-    return res.status(400).json({ message: "All fields required" });
-  }
+  const exists = await User.findOne({ email });
+  if (exists) return res.status(400).json({ message: "User exists" });
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User exists" });
+  const hash = await bcrypt.hash(password, 10);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+  await User.create({
+    firstname,
+    lastname,
+    email,
+    password: hash,
+    role: "admin"
+  });
 
-    const user = new User({ firstname, lastname, email, password: hashedPassword, role: "admin" });
-    await user.save();
-
-    res.status(201).json({ message: "Admin registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  res.status(201).json({ message: "Admin created successfully" });
 });
 
 //Forgot Password route
