@@ -12,6 +12,7 @@ function AdminRegister({baseURL}) {
     firstname: "",
     lastname: "",
     email: "",
+    role: "",
     password: "",
     confirmpassword: ""
   });
@@ -33,6 +34,7 @@ function AdminRegister({baseURL}) {
         firstname: form.firstname,
         lastname: form.lastname,
         email: form.email,
+        role: form.role,
         password: form.password
       });
       alert(res.data.message);
@@ -70,6 +72,10 @@ function AdminRegister({baseURL}) {
           <input name='email' placeholder="" type="email" value={form.email} onChange={handleChange} required />
           <label>Email</label>
           < MdEmail className="email"/>
+        </div>
+        <div>
+          <input name='role' placeholder="" type="role" value={form.role} onChange={handleChange} required />
+          <label>Role</label>
         </div>
         <div>
           <input name='password' placeholder="" type={showPassword ? "text" : 'password'} value={form.password} onChange={handleChange} required />

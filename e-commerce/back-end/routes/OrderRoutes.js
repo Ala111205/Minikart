@@ -1,54 +1,44 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const verifyUser = require('../middleware/verifyUser');
+const verifyAdmin = require('../middleware/verifyAdmin');
 
-// router.post('/orders', async (req, res) => {
-//   const { productId, quantity, price } = req.body;
 
-//   const order = new Order({
-//     user: req.user._id,
-//     products: [{ product: productId, quantity }],
-//     totalAmount: price * quantity,
-//   });
-
-//   try {
-//     const savedOrder = await order.save();
-//     res.status(201).json(savedOrder);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Order failed' });
-//   }
-// });
-
-router.post('/', async (req, res) => {
+// place order
+router.post('/', verifyUser, async (req, res) => {
   try {
-    const { items, total, user } = req.body;
-
-    if (!items || !items.length) {
-      return res.status(400).json({ message: 'No items provided' });
-    }
+    const { items, total, customer } = req.body;
 
     const newOrder = new Order({
       items,
       total,
-      user: user || null
+      customer,
+      user: req.user.id
     });
 
     await newOrder.save();
 
-    res.status(201).json({ message: 'Order placed successfully', orderId: newOrder._id });
+    res.status(201).json(newOrder);
   } catch (err) {
-    res.status(500).json({ message: 'Order failed', error: err.message });
+    res.status(500).json({ message: err.message });
   }
-
 });
 
-router.get('/orders', async (req, res) => {
-  try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.status(200).json(orders);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
-  }
+
+// get my orders
+router.get('/my-orders', verifyUser, async (req, res) => {
+  const orders = await Order.find({ user: req.user.id })
+    .sort({ createdAt: -1 });
+
+  res.json(orders);
+});
+
+
+// admin only
+router.get('/admin/all', verifyAdmin, async (req, res) => {
+  const orders = await Order.find().sort({ createdAt: -1 });
+  res.json(orders);
 });
 
 module.exports = router;

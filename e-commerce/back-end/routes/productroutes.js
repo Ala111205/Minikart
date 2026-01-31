@@ -1,165 +1,147 @@
-const express=require("express");
-const router=express.Router();
-const Product=require("../models/product");
-const verifyAdmin=require("../routes/verifyAdmin");
-const cloudinary=require("../config/cloudinary");
+const express = require("express");
+const router = express.Router();
+const Product = require("../models/Product");
+const verifyAdmin = require("../middleware/verifyAdmin"); // admin only
+const verifyUser = require("../middleware/verifyUser");   // logged-in user
+const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
-const path = require("path");
-const fs=require("fs");
+const fs = require("fs");
+const streamifier = require("streamifier");
 
-const storage=multer.memoryStorage();
-const upload=multer({storage});
+// --------------------------- Multer Setup ---------------------------
+// Use memory storage only for Cloudinary uploads
+const upload = multer({ storage: multer.memoryStorage() });
 
-const uploads = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + "-" + file.originalname),
+// --------------------------- PUBLIC ROUTES ---------------------------
+// Anyone can view products
+router.get("/shop", async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Failed to fetch products:", error.message);
+    res.status(500).json({ message: error.message });
+  }
 });
 
-//POST add a new product
+router.get("/shop/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("Failed to fetch product:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// --------------------------- ADMIN ROUTES ---------------------------
+// Only admin can add, update, delete products
 router.post("/shop", verifyAdmin, async (req, res) => {
   try {
-    console.log("BODY RECEIVED:", req.body);
+    const { name, description, price, stock, brand, specs, image } = req.body;
 
     const product = new Product({
-      name: req.body.name,
-      description: req.body.description,
-      price: Number(req.body.price),
-      image: req.body.image,
-      stock: Number(req.body.stock),
-      brand: req.body.brand,
+      name,
+      description,
+      price: Number(price),
+      stock: Number(stock),
+      brand,
+      image,
       specs: {
-          ram: req.body.specs?.ram || req.body.ram,
-          storage: req.body.specs?.storage || req.body.storage,
-          processor: req.body.specs?.processor || req.body.processor,
-          display: req.body.specs?.display || req.body.display,
-          os: req.body.specs?.os || req.body.os,
-          battery: req.body.specs?.battery || req.body.battery,
-      }
+        ram: specs?.ram,
+        storage: specs?.storage,
+        processor: specs?.processor,
+        display: specs?.display,
+        os: specs?.os,
+        battery: specs?.battery,
+      },
     });
 
     await product.save();
     res.status(201).json(product);
   } catch (error) {
-    console.log("SPECS: ",req.body["specs.ram"])
-    console.log("ERROR ADDING PRODUCT:", error.message);
+    console.error("Error adding product:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
 
-
-// GET all products
-router.get("/shop", verifyAdmin, async(req,res)=>{
-    try {
-        console.log("Received data: ",req.body)
-        const products = await Product.find();
-        res.status(201).json(products);
-        
-    } catch (error) {
-        console.log("Error saving product:", error.message);
-        res.status(500).json({ message: error.message });
-    }
-});
-
-//show the product with id
-router.get("/shop/:id", verifyAdmin, async(req,res)=>{
-    try {
-        const products=await Product.findById(req.params.id);
-        if(!products) 
-            return res.status(404).json({message:"Product not found"})
-        res.json(products);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: error.message})
-    }
-});
-// =========================== PUT - Update Product =============================
+// Update product
 router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) => {
   try {
+    const { name, description, price, stock, brand, specs, image } = req.body;
     const ID = req.params.id;
 
-    // Build updateFields from body
     const updateFields = {
-      name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-      stock: req.body.stock,
-      brand: req.body.brand,
-      image: req.body.image,
-      specs: {
-        ram: req.body.ram,
-        storage: req.body.storage,
-        processor: req.body.processor,
-        display: req.body.display,
-        os: req.body.os,
-        battery: req.body.battery,
-      },
+      name,
+      description,
+      price,
+      stock,
+      brand,
+      image,
+      specs,
     };
 
-    // If new image is uploaded
+    // If new image is uploaded via file
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const streamUpload = (fileBuffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream((error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          });
+          streamifier.createReadStream(fileBuffer).pipe(stream);
+        });
+      };
+
+      const result = await streamUpload(req.file.buffer);
       updateFields.image = result.secure_url;
-
-      // Remove local file after upload
-      fs.unlinkSync(req.file.path);
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(ID, updateFields, {
-      new: true,
-    });
+    const updatedProduct = await Product.findByIdAndUpdate(ID, updateFields, { new: true });
 
-    if (!updatedProduct) {
-      return res.status(404).json({ message: "Item not found" });
-    }
+    if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
 
-    res.json(updatedProduct);
+    res.status(200).json(updatedProduct);
   } catch (error) {
-    console.log("Update failed:", error.message);
+    console.error("Update failed:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
 
-//DELETE a product
-router.delete("/shop/:id", verifyAdmin, async(req,res)=>{
-    try {
-        const ID=req.params.id
-        const products=await Product.findByIdAndDelete(ID)
-        res.status(204).end();
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message:error.message});
-    }
-});
-// Store uploaded images in /uploads folder
-const streamifier = require("streamifier");
-
-router.post("/upload", upload.single("image"), async (req, res) => {
+// Delete product
+router.delete("/shop/:id", verifyAdmin, async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No image sed" });
-    }
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Product not found" });
+    res.status(204).end();
+  } catch (error) {
+    console.error("Delete failed:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
 
-    const streamUpload = (req) => {
+// Upload image for product (admin only)
+router.post("/upload", verifyAdmin, upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    const streamUpload = (fileBuffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (result) {
-            resolve(result);
-          } else {
-            reject(error);
-          }
+          if (result) resolve(result);
+          else reject(error);
         });
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
+        streamifier.createReadStream(fileBuffer).pipe(stream);
       });
     };
 
-    const result = await streamUpload(req);
+    const result = await streamUpload(req.file.buffer);
     res.status(200).json({ imageUrl: result.secure_url });
-
   } catch (error) {
-    console.error("Upload failed:", error.message);
+    console.error("Image upload failed:", error.message);
     res.status(500).json({ message: "Upload failed", error: error.message });
   }
 });
 
-module.exports=router;
+module.exports = router;

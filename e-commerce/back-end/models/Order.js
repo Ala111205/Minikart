@@ -1,53 +1,49 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+
+  customer: {
+    name: String,
+    address: String,
+    phone: String
+  },
+
   items: [
     {
-      customer: {
-        name: String,
-        address: String,
-        phone: String
-      },
-      productId: {
+      product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
       },
-      name: {
-        type: String,
-        required: true
-      },
-      price: {
-        type: Number,
-        required: true,
-        min: 0
-      },
+
       quantity: {
         type: Number,
-        required: true,
-        min: 1
-      }
+        required: true
+      },
+
+      // snapshot values (important)
+      price: Number,
+      name: String
     }
   ],
+
   total: {
     type: Number,
-    required: true,
-    min: 0
+    required: true
   },
+
   status: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending','processing','shipped','delivered','cancelled'],
     default: 'pending'
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // You can change or remove this if you're not using user auth
-    required: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
   }
-});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

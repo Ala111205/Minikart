@@ -52,7 +52,7 @@ export default function AdminLogin({onLoginSuccess, baseURL}){
         <>
             <div className="login" id="login">
                 <form onSubmit={handleLogin}>
-                    <h2>Admin Login</h2>
+                    <h2>Login</h2>
                     <div>
                         <div>
                             <input type="text" placeholder="" value={email} onChange={(e)=>setEmail(e.target.value)}required />
