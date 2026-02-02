@@ -3,19 +3,26 @@ import axios from 'axios';
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function AdminOrders({baseURL}) {
+export default function AdminOrders({baseURL, loading, setLoading}) {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
+    const adminData = JSON.parse(localStorage.getItem("adminData"));
 
-    axios.get(`${baseURL}/api/orders/orders`,{
+    const url =
+      adminData.role === "admin"
+        ? `${baseURL}/api/orders/admin/orders`
+        : `${baseURL}/api/orders/my-orders`;
+
+    axios.get(url, {
       headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then(res => setOrders(res.data))
-      .catch(err => console.error('Failed to fetch orders', err));
+    .then(res => setOrders(res.data))
+    .finally(()=>setLoading(false))
+    .catch(err => console.error("Failed to fetch orders", err));
 
     AOS.init({
             duration:1000,       // Animation duration in ms
@@ -51,7 +58,7 @@ export default function AdminOrders({baseURL}) {
           </div>
         ))
       ) : (
-        <p className={orders.length < 0 ? "" : "loading"} >{orders.length < 0 ? "No orders found" : ""}</p>
+        <p className={loading ? "loading": ""} >{orders.length < 0 ? "No orders found" : ""}</p>
       ) }
     </div>
   );
