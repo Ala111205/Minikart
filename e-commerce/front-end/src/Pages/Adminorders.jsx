@@ -7,22 +7,34 @@ export default function AdminOrders({baseURL, loading, setLoading}) {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    const adminData = JSON.parse(localStorage.getItem("adminData"));
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
 
-    const url =
-      adminData.role === "admin"
-        ? `${baseURL}/api/orders/admin/orders`
-        : `${baseURL}/api/orders/my-orders`;
+        const token = localStorage.getItem("adminToken");
+        const adminData = JSON.parse(localStorage.getItem("adminData"));
 
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then(res => setOrders(res.data))
-    .finally(()=>setLoading(false))
-    .catch(err => console.error("Failed to fetch orders", err));
+        const url =
+          adminData.role === "admin"
+            ? `${baseURL}/api/orders/admin/orders`
+            : `${baseURL}/api/orders/my-orders`;
+
+        const res = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setOrders(res.data);
+
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
 
     AOS.init({
             duration:1000,       // Animation duration in ms

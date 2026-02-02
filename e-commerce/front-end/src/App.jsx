@@ -17,7 +17,7 @@ import './App.css';
 
 const AppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
