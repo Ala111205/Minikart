@@ -45,6 +45,8 @@ const AppContent = () => {
 
   const baseURL=import.meta.env.VITE_API_URL
 
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>
       <Routes>
