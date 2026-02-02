@@ -28,7 +28,6 @@ export default function Buying({ baseURL }) {
     const token = localStorage.getItem("adminToken");
 
     if (!token) return alert("Login required");
-
     if (!item) return;
     if (!form.name || !form.address || !form.phone)
       return alert("Fill all fields");
@@ -37,7 +36,6 @@ export default function Buying({ baseURL }) {
       const payload = {
         items: [
           {
-            customer: form,
             productId: item._id,
             name: item.name,
             price: item.price,
@@ -45,6 +43,7 @@ export default function Buying({ baseURL }) {
           },
         ],
         total: item.price,
+        customer: form,
       };
 
       await axios.post(`${baseURL}/api/orders`, payload, {
