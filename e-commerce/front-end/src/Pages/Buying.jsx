@@ -3,7 +3,7 @@ import axios from 'axios';
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function Buying({baseUrl}) {
+export default function Buying({baseURL}) {
   const [item, setItem] = useState(null);
   const [form, setForm] = useState({
     name: '',
@@ -53,7 +53,7 @@ export default function Buying({baseUrl}) {
     };
 
     try {
-    const response = await axios.post(`${baseUrl}/api/`, {
+    const response = await axios.post(`${baseURL}/api/`, {
       orderData
     });
 
