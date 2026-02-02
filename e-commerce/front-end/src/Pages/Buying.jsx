@@ -1,26 +1,21 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function Buying({baseURL}) {
+export default function Buying({ baseURL }) {
   const [item, setItem] = useState(null);
   const [form, setForm] = useState({
-    name: '',
-    address: '',
-    phone: '',
+    name: "",
+    address: "",
+    phone: "",
   });
 
   useEffect(() => {
-    const buyItem = JSON.parse(localStorage.getItem('buyNowItem'));
-    if (buyItem) setItem(buyItem);
+    const stored = localStorage.getItem("buyNowItem");
+    if (stored) setItem(JSON.parse(stored));
 
-    AOS.init({
-      duration: 1000,
-      offset:100,
-      once:false,
-      easing:"ease-in-out"
-    })
+    AOS.init({ duration: 1000 });
   }, []);
 
   const handleChange = (e) => {
@@ -30,53 +25,64 @@ export default function Buying({baseURL}) {
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.address || !form.phone) {
-    return alert('Please fill in all details');
-  }
+    if (!item) return;
+    if (!form.name || !form.address || !form.phone)
+      return alert("Fill all fields");
 
-    const token = localStorage.getItem('adminToken'); // or user token
-    
-    const orderData={
-      item:[{
-        customer:{
-          address:form.address,
-          phone:form.phone,
-          name:form.name,
-        },
-        productId:item._id,
-        quantity:1,
-        amount:item.price,
-        name:item.name
-      }],
-      
-      
-    };
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      alert("Login required");
+      return;
+    }
 
     try {
-    const response = await axios.post(`${baseURL}/api/`, {
-      orderData
-    });
+      const orderPayload = {
+        items: [
+          {
+            productId: item._id,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+          },
+        ],
+        total: item.price,
+        customer: form,
+      };
 
-    alert('Order placed successfully!');
-    localStorage.removeItem('buyNowItem');
-    // You may redirect user here if needed
-    } catch (error) {
-      console.error('Order failed:', error);
-      alert('Order failed. Please try again.');
+      await axios.post(
+        `${baseURL}/api/orders`,
+        orderPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Order placed successfully");
+
+      localStorage.removeItem("buyNowItem");
+
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert("Order failed");
     }
-    };
+  };
 
-  if (!item) return <p>Loading item...</p>;
+  if (!item) return <p>Loading...</p>;
 
   return (
     <div className="Buying" data-aos="zoom-in">
       <h2>Checkout</h2>
+
       <p><strong>Product:</strong> {item.name}</p>
       <p><strong>Price:</strong> ₹{item.price}</p>
+
       <form onSubmit={handlePlaceOrder}>
-        <input type="text" name="name" placeholder="Your Name" value={form.name} onChange={handleChange} />
-       <input type="text" name="address" placeholder="Delivery Address" value={form.address} onChange={handleChange} />
-        <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} />
+        <input name="name" placeholder="Name" onChange={handleChange} />
+        <input name="address" placeholder="Address" onChange={handleChange} />
+        <input name="phone" placeholder="Phone" onChange={handleChange} />
         <button type="submit">Place Order</button>
       </form>
     </div>
