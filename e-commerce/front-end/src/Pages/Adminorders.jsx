@@ -50,15 +50,25 @@ export default function AdminOrders({baseURL}) {
 
   return (
     <div className="admin-orders">
-      {orders.length > 0 ? (
-        Array.isArray(orders)&&orders.map(order => (
+
+      {loading && <p className='loading'></p>}
+
+      {!loading && orders.length === 0 && (
+        <p>No orders found</p>
+      )}
+
+      {!loading && orders.length > 0 &&
+        orders.map(order => (
           <div key={order._id} data-aos="fade-up" className="order-card">
             <p><strong>Order ID:</strong> {order._id}</p>
+
             <div>
               <p><strong>Total:</strong> ₹{order.total}</p>
               <p><strong>Status:</strong> {order.status}</p>
             </div>
+
             <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+
             <h4>Items:</h4>
             <ul>
               {order.items.map((item, index) => (
@@ -67,12 +77,12 @@ export default function AdminOrders({baseURL}) {
                 </li>
               ))}
             </ul>
+
             <hr />
           </div>
         ))
-      ) : (
-        <p className={loading ? "loading": ""} >{orders.length === 0 ? "No orders found" : ""}</p>
-      ) }
+      }
+
     </div>
   );
 }
