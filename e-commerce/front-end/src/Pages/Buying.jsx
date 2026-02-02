@@ -25,21 +25,19 @@ export default function Buying({ baseURL }) {
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) return alert("Login required");
+
     if (!item) return;
     if (!form.name || !form.address || !form.phone)
       return alert("Fill all fields");
 
-    const token = localStorage.getItem("adminToken");
-
-    if (!token) {
-      alert("Login required");
-      return;
-    }
-
     try {
-      const orderPayload = {
+      const payload = {
         items: [
           {
+            customer: form,
             productId: item._id,
             name: item.name,
             price: item.price,
@@ -47,26 +45,20 @@ export default function Buying({ baseURL }) {
           },
         ],
         total: item.price,
-        customer: form,
       };
 
-      await axios.post(
-        `${baseURL}/api/orders`,
-        orderPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post(`${baseURL}/api/orders`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       alert("Order placed successfully");
-
       localStorage.removeItem("buyNowItem");
 
     } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert("Order failed");
+      console.error("SERVER ERROR:", err.response?.data);
+      alert(err.response?.data?.message || "Order failed");
     }
   };
 
