@@ -13,6 +13,8 @@ import Products from "./Pages/Products";
 import CartPage from "./Pages/Cart";
 import CheckoutPage from "./Pages/Checkoutpage";
 import AdminOrders from "./Pages/Adminorders";
+import Buying from "./Pages/Buying";
+
 import './App.css';
 
 const AppContent = () => {
@@ -63,6 +65,7 @@ const AppContent = () => {
           <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
           <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
           <Route path="/checkout" element={< CheckoutPage baseURL={baseURL}/>} />
+          <Route path="/Buying" element={< Buying baseURL={baseURL} />} />
 
         </Route>
         <Route path="/admin/profile" element={<AdminProfile />} />
