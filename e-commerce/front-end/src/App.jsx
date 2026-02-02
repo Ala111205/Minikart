@@ -61,7 +61,7 @@ const AppContent = () => {
           <Route path="/products/:id" element={<Products baseURL={baseURL} />} />
           <Route path="/shop" element={<Shop baseURL={baseURL} />} />
           <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
-          <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} loading={loading} setLoading={setLoading} />} />
+          <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
           <Route path="/checkout" element={< CheckoutPage baseURL={baseURL}/>} />
 
         </Route>

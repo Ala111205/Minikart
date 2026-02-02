@@ -3,8 +3,9 @@ import axios from 'axios';
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function AdminOrders({baseURL, loading, setLoading}) {
+export default function AdminOrders({baseURL}) {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -70,7 +71,7 @@ export default function AdminOrders({baseURL, loading, setLoading}) {
           </div>
         ))
       ) : (
-        <p className={loading ? "loading": ""} >{orders.length < 0 ? "No orders found" : ""}</p>
+        <p className={loading ? "loading": ""} >{orders.length === 0 ? "No orders found" : ""}</p>
       ) }
     </div>
   );
