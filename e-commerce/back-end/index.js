@@ -8,6 +8,7 @@ const app=express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
+  "http://localhost:2999",
   "https://minikart-pearl.vercel.app"
 ];
 
