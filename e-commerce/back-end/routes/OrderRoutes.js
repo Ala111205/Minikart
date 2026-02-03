@@ -3,10 +3,10 @@ const router = express.Router();
 const Order = require('../models/Order');
 const verifyUser = require('../middleware/verifyUser');
 const verifyAdmin = require('../middleware/verifyAdmin');
-
+const verifyAuth = require('../middleware/verifyAuth');
 
 // place order
-router.post("/", async (req, res) => {
+router.post("/", verifyAuth, async (req, res) => {
   try {
     const order = await Order.create({
       ...req.body,
@@ -19,6 +19,12 @@ router.post("/", async (req, res) => {
     console.error(err);
     res.status(500).json({ message: err.message });
   }
+});
+
+// user only
+router.get("/my-orders", verifyUser, async (req, res) => {
+  const orders = await Order.find({ user: req.user.id });
+  res.json(orders);
 });
 
 // admin only
