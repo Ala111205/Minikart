@@ -5,23 +5,16 @@ const cors=require("cors");
 
 const app=express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:2999",
-  "https://minikart-pearl.vercel.app"
-];
-
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS: "+origin));
-    }
-  },
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:2999",
+    "https://minikart-pearl.vercel.app"
+  ],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
