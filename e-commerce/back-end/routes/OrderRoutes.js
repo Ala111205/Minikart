@@ -6,7 +6,7 @@ const verifyAdmin = require('../middleware/verifyAdmin');
 
 
 // place order
-router.post("/", verifyUser, async (req, res) => {
+router.post("/", async (req, res) => {
   const order = await Order.create({
     ...req.body,
     user: req.user.id
