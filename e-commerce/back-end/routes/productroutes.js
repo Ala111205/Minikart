@@ -67,44 +67,27 @@ router.post("/shop", verifyAdmin, async (req, res) => {
 });
 
 // Update product
-router.put("/shop/:id", verifyAdmin, upload.single("image"), async (req, res) => {
+router.put("/shop/:id", verifyAdmin, async (req, res) => {
   try {
-    const { name, description, price, stock, brand, specs, image } = req.body;
-    const ID = req.params.id;
+    const { name, description, price, stock, brand, image, specs } = req.body;
 
-    const updateFields = {
-      name,
-      description,
-      price,
-      stock,
-      brand,
-      image,
-      specs,
-    };
-
-    // If new image is uploaded via file
-    if (req.file) {
-      const streamUpload = (fileBuffer) => {
-        return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream((error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          });
-          streamifier.createReadStream(fileBuffer).pipe(stream);
-        });
-      };
-
-      const result = await streamUpload(req.file.buffer);
-      updateFields.image = result.secure_url;
-    }
-
-    const updatedProduct = await Product.findByIdAndUpdate(ID, updateFields, { new: true });
-
-    if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        description,
+        price: Number(price),
+        stock: Number(stock),
+        brand,
+        image,
+        specs
+      },
+      { new: true }
+    );
 
     res.status(200).json(updatedProduct);
   } catch (error) {
-    console.error("Update failed:", error.message);
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 });
