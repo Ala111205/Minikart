@@ -1,82 +1,108 @@
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MdEmail } from "react-icons/md";
-import { FaEyeSlash } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-export default function AdminLogin({onLoginSuccess, baseURL}){
-    const [email, setEmail]=useState("");
+import { MdEmail } from "react-icons/md";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-    const [password, setPassword]=useState("");
+export default function AdminLogin({ onLoginSuccess, baseURL }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
+  const navigate = useNavigate();
 
-    const [loginFailed, setLoginFailed]=useState(false);
+  const togglePassword = () => setShowPassword(!showPassword);
 
-    const navigate=useNavigate();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+        const res = await axios.post(`${baseURL}/api/admin/login`, { email, password });
+        console.log("FULL RESPONSE:", res.data);
 
-    const handleLogin=async(e)=>{
-        e.preventDefault();
-        try {
-            const res = await axios.post(`${baseURL}/api/admin/login`, {
-            email,
-            password,
-            });
-            const token = res.data.token; // ✅ Fix is here
-            const admin = res.data.user;
-            localStorage.setItem("adminToken", token); // ✅ Save correctly
-            localStorage.setItem("adminData", JSON.stringify(admin))
-            alert("Login successfully");
-            onLoginSuccess(); // proceed
-            navigate("/navbar",{replace:true});
-        } catch (error) {
-            setLoginFailed(true); 
-            console.log("Login Failed ",error);
-            alert("Login failed: " + (error.response?.data?.message || error.message));
+        const { token, user } = res.data;
+
+        console.log("TOKEN:", token);
+        console.log("USER:", user);
+        console.log("ROLE:", user?.role);
+
+        alert("Login successful!"); 
+        
+        if (user.role === "admin") {
+          localStorage.setItem("adminToken", token);
+          localStorage.setItem("adminData", JSON.stringify(user));
+          onLoginSuccess("admin", token, user);
+          navigate("/dashboard");
+        } else {
+          localStorage.setItem("userToken", token);
+          localStorage.setItem("userData", JSON.stringify(user));
+          onLoginSuccess("user", token, user);
+          navigate("/shop");
         }
-    };
 
-    useEffect(()=>{
-        if (loginFailed){
-            setLoginFailed(false);
-        }
-    },[email,password])
+        console.log("After save:", localStorage);
+        console.log("token:", token);
 
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePassword = () => {
-      setShowPassword(!showPassword);
+    } catch (err) {
+        console.error(err)
+        setLoginFailed(true);
+        alert("Login failed: " + (err.response?.data?.message || err.message));
     }
+  };
 
-    return(
-        <>
-            <div className="login" id="login">
-                <form onSubmit={handleLogin}>
-                    <h2>Login</h2>
-                    <div>
-                        <div>
-                            <input type="text" placeholder="" value={email} onChange={(e)=>setEmail(e.target.value)}required />
-                            <label>Email</label>
-                            <MdEmail className="email" />
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            <input id="visible" type={showPassword ?  "text":'password'} placeholder="" value={password} onChange={(e)=>setPassword(e.target.value)}required />
-                            <label>Password</label>
-                            {showPassword ?  (<FaEye className="eyes" onClick={togglePassword}/>):(<FaEyeSlash className="eyes" onClick={togglePassword} />)}
-                        </div>
-                        
-                    </div>
-                    <div className="bu1">
-                        {
-                            loginFailed?(<button type="button" onClick={()=>navigate("/forgot-password")}>Forgot password</button>) : (
-                            <button type="submit">Login</button>)
-                        }
-                        <p>Don't have an account? <Link to="/signup">Singup here</Link> </p>
-                    </div>
-                </form>
-            </div>
-        </>
-    )
-}; 
+  useEffect(() => {
+    if (loginFailed) setLoginFailed(false);
+  }, [email, password]);
+
+  return (
+    <div className="login" id="login">
+      <form onSubmit={handleLogin}>
+        <h2>Login</h2>
+
+        <div>
+          <div>
+            <input
+              type="text"
+              placeholder=""
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <label>Email</label>
+            <MdEmail className="email" />
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder=""
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <label>Password</label>
+            {showPassword ? (
+              <FaEye className="eyes" onClick={togglePassword} />
+            ) : (
+              <FaEyeSlash className="eyes" onClick={togglePassword} />
+            )}
+          </div>
+        </div>
+
+        <div className="bu1">
+          {loginFailed ? (
+            <button type="button" onClick={() => navigate("/forgot-password")}>
+              Forgot password
+            </button>
+          ) : (
+            <button type="submit">Login</button>
+          )}
+          <p>
+            Don't have an account? <Link to="/signup">Signup here</Link>
+          </p>
+        </div>
+      </form>
+    </div>
+  );
+}

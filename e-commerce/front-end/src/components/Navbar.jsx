@@ -9,9 +9,11 @@ export default function Navbar(props){
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState("");
   const [profile, setProfile]=useState(true);
-
-  const {show,setShow}=props
   const [query, setQuery] = useState("");
+
+  const {auth, show, setShow}=props
+
+  const role = auth?.role;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -22,28 +24,16 @@ export default function Navbar(props){
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-
-    if (!token) {
-      navigate("/", { replace: true });
-      return;
-    }
-
-    const raw = localStorage.getItem("adminData");
+    const raw =
+      localStorage.getItem("adminData") ||
+      localStorage.getItem("userData");
 
     if (raw) {
-      const admin = JSON.parse(raw);
-      setAdminName(admin.name || "Admin");
+      const user = JSON.parse(raw);
+      setAdminName(user.name || "User");
     }
-
-    const unblock = window.history.pushState(null, null, null, window.location.href);
-    window.onpopstate = function () {
-      unblock
-    };
-    return () => {
-      window.onpopstate = null;
-    };
   }, []);
+
 
   
 
@@ -54,12 +44,6 @@ export default function Navbar(props){
   const click = () =>{
     setShow(!show)
   }
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminData");
-    navigate("/");
-  };
 
   return (
     <>
@@ -75,7 +59,18 @@ export default function Navbar(props){
         </form>
         <li><Link to="/shop">Shop</Link></li>
         <li><Link to="/cart">Cart</Link></li>
-        <li><Link to="/admin/orders">Orders</Link></li>
+        {role === "user" && (
+          <>
+          <li><Link to="/my-orders">Orders</Link></li>
+          </>
+        )}
+        {/* Admin-only link */}
+        {role === "admin" && (
+          <>
+          <li><Link to="/admin/orders">Orders</Link></li>
+          <li><Link to="/dashboard">Dashboard</Link></li>
+          </>
+        )}
       </ul>
 
       <div className="navbar-profile">

@@ -24,13 +24,11 @@ export default function Shop({baseURL}) {
   }
 
   const handleBuyNow = (product) => {
-    // Optional: Save to localStorage or Context
     localStorage.setItem('buyNowItem', JSON.stringify(product));
 
-    // Redirect to a checkout page
-    window.location.href = '/checkout';
-
-    navigate("/checkout")
+    navigate('/checkout', {
+      state: { items: [{ ...product, quantity: 1 }] }
+    });
   };
 
   useEffect(() => {

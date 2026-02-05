@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-export default function AdminOrders({baseURL}) {
+export default function UserOrders({ baseURL }) {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-
     const fetchOrders = async () => {
+      setLoading(true);
+
       try {
-        const token = localStorage.getItem("adminToken");
+        const token = localStorage.getItem("userToken");
 
         const res = await axios.get(
-          `${baseURL}/api/orders/admin/orders`,
+          `${baseURL}/api/orders/my-orders`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -32,15 +32,18 @@ export default function AdminOrders({baseURL}) {
     fetchOrders();
 
     AOS.init({
-            duration:1000,       // Animation duration in ms
-            offset: 100,        // How far from viewport before triggering
-            once: false,
-            mirror:true,        // Whether animation runs only once or every time
-            easing:"ease-out"
-        })
+        duration:1000,       // Animation duration in ms
+        offset: 100,        // How far from viewport before triggering
+        once: false,
+        mirror:true,        // Whether animation runs only once or every time
+        easing:"ease-out"
+    })
     AOS.refresh();
 
   }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (!orders.length) return <p>No orders yet</p>;
 
   return (
     <div className="orders">
@@ -74,7 +77,7 @@ export default function AdminOrders({baseURL}) {
                 </li>
               ))}
             </ul>
-            
+
             <p><b>Address:-</b> {order.customer?.address}</p>
           </div>
         ))

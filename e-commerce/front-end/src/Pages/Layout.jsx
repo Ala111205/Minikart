@@ -1,14 +1,13 @@
-import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
-export default function Layout(props) {
-  const {show,setShow,}=props
+export default function Layout({ auth, setAuth }) {
   return (
     <>
-      <Navbar show={show} setShow={setShow} />
-      <main>
+      {auth?.token && <Navbar auth={auth} setAuth={setAuth} />}
+      <div className="page-content">
         <Outlet />
-      </main>
+      </div>
     </>
   );
 }

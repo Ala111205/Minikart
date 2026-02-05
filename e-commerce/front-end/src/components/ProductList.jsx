@@ -1,105 +1,101 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default class ProductList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { Products: [] };
-  }
+export default function ProductList({ refresh, baseURL, onEditProduct, scrollToId, clearScroll }) {
+  const [products, setProducts] = useState([]);
 
-  componentDidMount() {
-    this.fetchProducts();
-  }
-
-  fetchProducts = async () => {
-    try {
-      const token = localStorage.getItem("adminToken");
-      if (!token) {
-        console.log("No token found in localStorage");
-        return;
-      }
-
-      const res = await axios.get(`${this.props.baseURL}/api/products/shop`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({ Products: res.data });
-    } catch (error) {
-      console.log("Error fetching products: ", error.message);
-    }
-  };
-
-  handleDelete = async (id) => {
+  const fetchProducts = async () => {
     const token = localStorage.getItem("adminToken");
-    try {
-      await axios.delete(`${this.props.baseURL}/api/products/shop/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert("Product deleted");
-      this.fetchProducts();
-    } catch (error) {
-      console.error("Delete failed", error.message);
-    }
+
+    const res = await axios.get(`${baseURL}/api/products/shop`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setProducts(res.data);
   };
 
-  render() {
-    const { Products } = this.state;
-    const { onEditProduct } = this.props;
+  useEffect(() => {
+    fetchProducts();
+  }, [refresh]);
 
-    return (
-      <div className="Productlist">
-        <h2>All Products</h2>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Brand</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>RAM</th>
-              <th>Storage</th>
-              <th>Processor</th>
-              <th>Display</th>
-              <th>OS</th>
-              <th>Battery</th>
-              <th>Image</th>
-              <th colSpan={"2"} className="last-th">Actions</th>
+  // SCROLL AFTER PRODUCTS RENDER
+  useEffect(() => {
+    if (!scrollToId) return;
+
+    const run = async () => {
+      await fetchProducts(); // wait for fresh list
+
+      setTimeout(() => {
+        const el = document.getElementById(`product-${scrollToId}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        clearScroll();
+      }, 0); // wait for DOM paint
+    };
+
+    run();
+  }, [scrollToId]);
+
+
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("adminToken");
+
+    await axios.delete(`${baseURL}/api/products/shop/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    fetchProducts();
+  };
+
+  return (
+    <div className="Productlist">
+      <h2>All Products</h2>
+
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>RAM</th>
+            <th>Storage</th>
+            <th>Processor</th>
+            <th>Display</th>
+            <th>OS</th>
+            <th>Battery</th>
+            <th>Image</th>
+            <th colSpan="2">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {products.map((prod) => (
+            <tr key={prod._id} id={`product-${prod._id}`}>
+              <td>{prod.name}</td>
+              <td>{prod.brand || "-"}</td>
+              <td>{prod.description}</td>
+              <td>₹{prod.price}</td>
+              <td>{prod.stock}</td>
+              <td>{prod.specs?.ram || "-"}</td>
+              <td>{prod.specs?.storage || "-"}</td>
+              <td>{prod.specs?.processor || "-"}</td>
+              <td>{prod.specs?.display || "-"}</td>
+              <td>{prod.specs?.os || "-"}</td>
+              <td>{prod.specs?.battery || "-"}</td>
+              <td>
+                {prod.image ? (
+                  <img src={prod.image} alt={prod.name} width="60" />
+                ) : "No Image"}
+              </td>
+              <td colSpan={"2"} className="gap">
+                <button onClick={() => onEditProduct(prod)}>Edit</button>
+                <button onClick={() => handleDelete(prod._id)}>Delete</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(Products)&&Products.map((prod) => (
-              <tr key={prod._id}>
-                <td>{prod.name}</td>
-                <td>{prod.brand || "-"}</td>
-                <td>{prod.description}</td>
-                <td>₹{prod.price}</td>
-                <td>{prod.stock}</td>
-                <td>{prod.specs?.ram || "-"}</td>
-                <td>{prod.specs?.storage || "-"}</td>
-                <td>{prod.specs?.processor || "-"}</td>
-                <td>{prod.specs?.display || "-"}</td>
-                <td>{prod.specs?.os || "-"}</td>
-                <td>{prod.specs?.battery || "-"}</td>
-                <td>
-                  {prod.image ? (
-                    <img src={prod.image} alt={prod.name} width="60" />
-                  ) : (
-                    "No Image"
-                  )}
-                </td>
-                <td colSpan={"2"} className="gap">
-                  <button onClick={() => onEditProduct(prod)}>Edit</button>
-                  <button onClick={() => this.handleDelete(prod._id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

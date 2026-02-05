@@ -30,14 +30,14 @@ export default function CartPage() {
 
   // Update the quantity of an item
   const updateQuantity = (productId, quantity) => {
-    const updatedCart = cart.map(item => {
-      if (item._id === productId) {
-        item.quantity = quantity;
-      }
-      return item;
-    });
+    const updatedCart = cart.map(item =>
+      item._id === productId
+        ? { ...item, quantity }
+        : item
+    );
+
     setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));  // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   // Calculate the total price of all items in the cart
@@ -47,7 +47,7 @@ export default function CartPage() {
 
   // Navigate to the checkout page
   const proceedToCheckout = () => {
-    navigate('/checkout');
+    navigate('/checkout', { state: { items: cart } });
   };
 
   return (

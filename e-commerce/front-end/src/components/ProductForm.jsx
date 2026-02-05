@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, baseURL }) {
+export default function ProductForm({
+  onProductAdded,
+  productToEdit,
+  ClearEdit,
+  baseURL
+}) {
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -19,116 +24,107 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, 
       battery: ""
     }
   });
-  const [imageFile, setImageFile] = useState(null);
 
+  const [imageFile, setImageFile] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const fileRef = useRef();
   const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
 
+  /* ---------------- LOAD EDIT DATA ---------------- */
   useEffect(() => {
-    if (productToEdit) {
-      // Ensure nested specs is handled correctly
-      setForm({
-        ...productToEdit,
-        specs: {
-          ram: productToEdit.specs?.ram || "",
-          storage: productToEdit.specs?.storage || "",
-          processor: productToEdit.specs?.processor || "",
-          display: productToEdit.specs?.display || "",
-          os: productToEdit.specs?.os || "",
-          battery: productToEdit.specs?.battery || ""
-        }
-      });
-    }
+    if (!productToEdit) return;
+
+    setForm({
+      ...productToEdit,
+      specs: {
+        ram: productToEdit.specs?.ram || "",
+        storage: productToEdit.specs?.storage || "",
+        processor: productToEdit.specs?.processor || "",
+        display: productToEdit.specs?.display || "",
+        os: productToEdit.specs?.os || "",
+        battery: productToEdit.specs?.battery || ""
+      }
+    });
   }, [productToEdit]);
 
+  /* ---------------- CHANGE HANDLER ---------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Check for nested specs field
     if (name.startsWith("specs.")) {
-      const specKey = name.split(".")[1];
-      setForm((prev) => ({
+      const key = name.split(".")[1];
+
+      setForm(prev => ({
         ...prev,
-        specs: {
-          ...prev.specs,
-          [specKey]: value
-        }
+        specs: { ...prev.specs, [key]: value }
       }));
     } else {
-      setForm({ ...form, [name]: value });
+      setForm(prev => ({ ...prev, [name]: value }));
     }
   };
 
+  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+
     try {
-    let imageUrl = form.image;
+      let imageUrl = form.image;
 
-    // If new image file is selected, upload it first
-    if (imageFile) {
-      const formData = new FormData();
-      formData.append("image", imageFile);
+      /* image upload */
+      if (imageFile) {
+        const fd = new FormData();
+        fd.append("image", imageFile);
 
-      const uploadRes = await axios.post(`${baseURL}/api/products/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type":"multipart/form-data",
-        },
-      });
+        const uploadRes = await axios.post(
+          `${baseURL}/api/products/upload`,
+          fd,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            onUploadProgress: (e) =>
+              setProgress(Math.round((e.loaded * 100) / e.total))
+          }
+        );
 
-      imageUrl = uploadRes.data.imageUrl; // Get image URL from server
-    }
+        imageUrl = uploadRes.data.imageUrl;
 
-    // const payload = new FormData();
-    //   payload.append("name", form.name);
-    //   payload.append("description", form.description);
-    //   payload.append("price", form.price);
-    //   payload.append("stock", form.stock);
-    //   payload.append("brand", form.brand);
-    //   payload.append("image", imageUrl);
-    //   payload.append("ram", form.specs.ram);
-    //   payload.append("storage", form.specs.storage);
-    //   payload.append("processor", form.specs.processor);
-    //   payload.append("display", form.specs.display);
-    //   payload.append("os", form.specs.os);
-    //   payload.append("battery", form.specs.battery);
+        setImageFile(null);
+        fileRef.current.value = "";
+      }
 
-        // Create FormData for product update
-    const data = new FormData();
-    data.append("name", form.name);
-    data.append("description", form.description);
-    data.append("price", form.price);
-    data.append("stock", form.stock);
-    data.append("brand", form.brand);
-    data.append("image", imageUrl); // Either existing or newly uploaded
+      const payload = {
+        ...form,
+        image: imageUrl
+      };
 
-    // Flatten specs
-    data.append("ram", form.specs.ram);
-    data.append("storage", form.specs.storage);
-    data.append("processor", form.specs.processor);
-    data.append("display", form.specs.display);
-    data.append("os", form.specs.os);
-    data.append("battery", form.specs.battery);
+      let productId;
 
-    if (productToEdit) {
-      await axios.put(`${baseURL}/api/products/shop/${productToEdit._id}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type":"multipart/form-data"
-        },
-      });
-      alert("Product updated");
-      ClearEdit();
-    } else {
-      await axios.post(`${baseURL}/api/products/shop`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type":"application/json"
-        },
-      });
-      alert("Product added successfully!");
-    }
+      /* update */
+      if (productToEdit) {
+        await axios.put(
+          `${baseURL}/api/products/shop/${productToEdit._id}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
+        productId = productToEdit._id;
+        ClearEdit();
+      }
+      /* add */
+      else {
+        const res = await axios.post(
+          `${baseURL}/api/products/shop`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        productId = res.data._id;
+      }
+
+      /* reset */
       setForm({
         name: "",
         description: "",
@@ -146,16 +142,19 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, 
         }
       });
 
-      setImageFile(null)
+      /* send ID to dashboard */
+      onProductAdded(productId);
 
-      onProductAdded();
-
-    } catch (error) {
-      console.error("Error adding/updating product:", error.message);
-      alert("Failed to add/update product");
+    } catch (err) {
+      console.error(err);
+      alert("Failed");
+    } finally {
+      setSubmitting(false);
+      setProgress(0);
     }
   };
 
+  /* ---------------- UI ---------------- */
   return (
     <div className="Addlist">
       <h2>{productToEdit ? "Edit Product" : "Add Product"}</h2>
@@ -173,7 +172,7 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, 
         </div>
 
         <div><label>Product Image</label>
-          <input type="file" accept="image/*" onChange={(e)=>setImageFile(e.target.files[0])} />
+          <input type="file" ref={fileRef} accept="image/*" onChange={(e)=>setImageFile(e.target.files[0])} />
         </div>
 
         <div><label>Stock</label>
@@ -212,7 +211,13 @@ export default function ProductForm({ onProductAdded, productToEdit, ClearEdit, 
           </div>
         </fieldset>
 
-        <button type="submit">{productToEdit ? "Update" : "Add"}</button>
+        <button type="submit" disabled={submitting}>
+          {submitting
+            ? `Uploading ${progress}%...`
+            : productToEdit
+              ? "Update"
+              : "Add"}
+        </button>
       </form>
     </div>
   );

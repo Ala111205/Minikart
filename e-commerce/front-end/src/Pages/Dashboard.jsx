@@ -1,53 +1,59 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../components/ProductForm";
 import ProductList from "../components/ProductList";
 
+export default function Dashboard({ baseURL }) {
+  const [refresh, setRefresh] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
 
-export default function Dashboard({baseURL}){
-    const [refers,setRefers]=useState(false);//re-fetch products
+  // ⭐ NEW
+  const [scrollToId, setScrollToId] = useState(null);
 
-    const [editingProduct,setEditingProduct]=useState(null);//holds product being edited
+  const navigate = useNavigate();
 
-    const navigate=useNavigate();
-
-    useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/",{replace:true}); // Redirect if not logged in
-    }
-    }, []);
+    if (!token) navigate("/", { replace: true });
+  }, []);
 
-    //toggle to trigger re-fetch
-    const handleProductAdded=()=>{
-        setRefers(!refers)
-    }
+  // called after add/update
+  const handleProductAdded = (productId) => {
+    setRefresh(prev => !prev);
 
-    //send to form
-    const handleEditProduct = (product) => {
-        setEditingProduct(product);
-    };
+    // tell table which row to scroll
+    setScrollToId(productId);
 
-    //reset form after update
-    const ClearEdit=()=>setEditingProduct(null);
+    setEditingProduct(null);
+  };
 
-    const handleLogout=()=>{
-        localStorage.clear();
-        window.location.href="/"
-    }
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-    return(
-        <>
-            <div className="content">
-                <div>
-                    <h1>Admin Dashboard</h1>
-                    <button onClick={handleLogout} className="logout">Logout</button>
-                </div>
-                <div className="dashboard">
-                    <ProductForm onProductAdded={handleProductAdded} productToEdit={editingProduct} ClearEdit={ClearEdit} baseURL={baseURL} />
-                    <ProductList key={refers} onEditProduct={handleEditProduct} baseURL={baseURL} />
-                </div>
-            </div>
-        </>
-    )
+  const clearScroll = () => setScrollToId(null);
+
+  return (
+    <div className="content">
+      <div className="dashboard">
+
+        <ProductForm
+          onProductAdded={handleProductAdded}
+          productToEdit={editingProduct}
+          ClearEdit={() => setEditingProduct(null)}
+          baseURL={baseURL}
+        />
+
+        <ProductList
+          refresh={refresh}
+          scrollToId={scrollToId}
+          clearScroll={clearScroll}
+          onEditProduct={handleEditProduct}
+          baseURL={baseURL}
+        />
+
+      </div>
+    </div>
+  );
 }

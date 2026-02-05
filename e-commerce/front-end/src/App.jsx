@@ -1,10 +1,17 @@
-import {useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate
+} from "react-router-dom";
+
 import PrivateRoute from "./Pages/PrivateRoutes";
-import Layout from "./Pages/Layout";
 import Navbar from "./components/Navbar";
+
 import Dashboard from "./Pages/Dashboard";
-import AdminLogin from './Pages/AdminLogin ';
+import AdminLogin from "./Pages/AdminLogin ";
 import AdminRegister from "./Pages/AdminRegister";
 import ForgotPassword from "./Pages/ForgotPassword";
 import AdminProfile from "./Pages/AdminProfile";
@@ -13,64 +20,150 @@ import Products from "./Pages/Products";
 import CartPage from "./Pages/Cart";
 import CheckoutPage from "./Pages/Checkoutpage";
 import AdminOrders from "./Pages/Adminorders";
-import Buying from "./Pages/Buying";
+import UserOrders from "./Pages/UserOrders";
 
-import './App.css';
+import "./App.css";
 
 const AppContent = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [auth, setAuth] = useState({ role: null, token: null, user: null });
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
   const location = useLocation();
 
+  const baseURL = import.meta.env.VITE_API_URL;
+
+  /* --------------------------
+     Load token once on start
+  ---------------------------*/
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    setIsLoggedIn(!!token);
+    const adminToken = localStorage.getItem("adminToken");
+    const adminData = localStorage.getItem("adminData");
+    const userToken = localStorage.getItem("userToken");
+    const userData = localStorage.getItem("userData");
+
+    if (adminToken && adminData) setAuth({ role: "admin", token: adminToken, user: JSON.parse(adminData) });
+    else if (userToken && userData) setAuth({ role: "user", token: userToken, user: JSON.parse(userData) });
+
     setLoading(false);
   }, []);
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
+  const handleLoginSuccess = (role, token, user) => {
+    setAuth({ role, token, user });
   };
 
-  console.log("Token in localStorage:", localStorage.getItem("adminToken"));
-  console.log("isLoggedIn:", isLoggedIn);
+  /* --------------------------
+     Detect auth pages
+  ---------------------------*/
+  const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/forgot-password";
 
-  const isAuthPage = location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/forgot-password';
-
-  if (loading) {
-    return <div className="container container-bg">
-      <div className="loading"></div>
-    </div>
-  }
-
-  const baseURL=import.meta.env.VITE_API_URL
-
-  console.log("API URL:", import.meta.env.VITE_API_URL);
+  if (loading)
+    return (
+      <div className="container container-bg">
+        <div className="loading"></div>
+      </div>
+    );
 
   return (
     <div className={isAuthPage ? "container-bg" : "container"}>
-      <Routes>
-        <Route path="/" element={<AdminLogin onLoginSuccess={handleLoginSuccess} baseURL={baseURL} />}/>
-        <Route path="/signup" element={<AdminRegister baseURL={baseURL} />}  />
-        <Route path="/forgot-password" element={<ForgotPassword baseURL={baseURL} />} />
-        <Route path="/Navbar" element={
-        <PrivateRoute>
-          <Navbar show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} />
-        </PrivateRoute>}/>
-        <Route path="/dashboard" element={
-          <PrivateRoute>
-            <Dashboard baseURL={baseURL} />
-          </PrivateRoute>}/>
-        <Route element={<PrivateRoute><Layout show={isLoggedIn} setShow={setIsLoggedIn} profile={loading} setProfile={setLoading} /></PrivateRoute>}>
-          <Route path="/products/:id" element={<Products baseURL={baseURL} />} />
-          <Route path="/shop" element={<Shop baseURL={baseURL} />} />
-          <Route path="/cart" element={<CartPage baseURL={baseURL} />} />
-          <Route path="/admin/orders" element={<AdminOrders baseURL={baseURL} />} />
-          <Route path="/checkout" element={< CheckoutPage baseURL={baseURL}/>} />
-          <Route path="/Buying" element={< Buying baseURL={baseURL} />} />
+      {/* Navbar OUTSIDE routes */}
+      {auth.token && !isAuthPage && (
+        <Navbar show={isLoggedIn} setShow={setIsLoggedIn} auth={auth} setAuth={setAuth} />
+      )}
 
-        </Route>
-        <Route path="/admin/profile" element={<AdminProfile />} />
+      <Routes>
+        {/* ============ PUBLIC ============ */}
+        <Route
+          path="/login"
+          element={
+            <AdminLogin
+              baseURL={baseURL}
+              onLoginSuccess={handleLoginSuccess}
+            />
+          }
+        />
+        <Route path="/signup" element={<AdminRegister baseURL={baseURL} />} />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword baseURL={baseURL} />}
+        />
+
+        {/* ============ ADMIN ============ */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute role="admin" >
+              <Dashboard baseURL={baseURL} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <PrivateRoute role="admin" >
+              <AdminOrders baseURL={baseURL} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/my-orders"
+          element={
+            <PrivateRoute role="user">
+              <UserOrders baseURL={baseURL} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/profile"
+          element={
+            <PrivateRoute roles={["admin", "user"]}>
+              <AdminProfile />
+            </PrivateRoute>
+          }
+        />
+
+        {/* ============ USER ============ */}
+        <Route
+          path="/shop"
+          element={
+            <PrivateRoute roles={["admin", "user"]}>
+              <Shop baseURL={baseURL} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute roles={["admin", "user"]}>
+              <CartPage baseURL={baseURL} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute roles={["admin", "user"]}>
+              <CheckoutPage baseURL={baseURL} auth={auth} />
+            </PrivateRoute>
+          }
+        />
+
+        {/* shared */}
+        <Route
+          path="/products/:id"
+          element={<Products baseURL={baseURL} />}
+        />
+
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </div>
   );
